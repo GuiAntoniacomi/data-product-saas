@@ -1,0 +1,24 @@
+# Credenciais — NUNCA subir
+.env
+scraper/.env
+
+# Claude Code (configurações locais)
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Outputs gerados pelo scraper
+*.csv
+!templates/planilha_sinais_dor.csv
+
+# Sistema
+.DS_Store
+Thumbs.db

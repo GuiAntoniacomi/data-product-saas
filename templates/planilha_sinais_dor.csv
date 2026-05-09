@@ -1,0 +1,20 @@
+SINAIS DE DOR,,,,,,,,
+Fonte,Nicho,Problema Descrito,Link / Referência,Intensidade Dor (1-5),Tem Disposição de Pagar? (S/N/?),Data,Status,Notas
+Reddit,E-commerce,"Can't unify Shopify + Google Ads data — spending 5h/week manually pulling reports",https://reddit.com/r/ecommerce/...,4,S,2026-05-01,analisado,Lead potencial: mencionou budget de $500/mês
+LinkedIn,SaaS,"Founder post: 'Our data is in 12 tools and nobody knows what's true'",https://linkedin.com/posts/...,5,?,2026-05-03,novo,
+ProductHunt,Geral,"Review negativo Supermetrics: 'breaks every time we add a new source'",https://producthunt.com/...,3,S,2026-05-05,analisado,Nicho E-commerce ou SaaS
+
+LEADS,,,,,,,,
+Nome,Empresa,Cargo,Plataforma,Problema Mencionado,Link Perfil,Status Outreach,Data Primeiro Contato,Notas
+João Silva,Ecommerce XPTO,Co-founder,LinkedIn,Dados fragmentados entre Shopify e Meta Ads,https://linkedin.com/in/...,Mensagem enviada,2026-05-08,Aberto para conversa
+Ana Rocha,SaaS ABC,CTO,Reddit,Pipeline quebrando toda semana,https://reddit.com/u/...,Aguardando resposta,2026-05-09,
+
+CALLS DE VALIDAÇÃO,,,,,,,,
+Nome,Data,Duração,Nicho,Dor Principal,Dor Secundária,Já Tentou Resolver?,Pagaria? Quanto?,Lead Quente?,Notas
+João Silva,2026-05-15,18min,E-commerce,"Sem unificação Shopify+Ads — 5h/semana manual","Sem visibilidade de CAC por canal","Tentou Supermetrics, não funcionou bem","Sim — até $500/mês ou $3k projeto",Sim,Muito animado. Quer demo na próxima semana.
+
+RESUMO POR NICHO,,,,,,,,
+Nicho,Sinais Coletados,Score Médio (1-5),% Com Disposição de Pagar,Decisão,
+E-commerce,0,0,0%,⏳ Coletar mais dados,
+SaaS,0,0,0%,⏳ Coletar mais dados,
+Franquias,0,0,0%,⏳ Coletar mais dados,
