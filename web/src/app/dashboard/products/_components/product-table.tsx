@@ -16,6 +16,7 @@ type Product = {
   score: number
   category: string
   aliexpress_url: string
+  search_keyword: string
 }
 
 const CATEGORIES = ['Todos', 'Casa e Cozinha', 'Pets', 'Fitness', 'Jardim', 'Ferramentas']
@@ -104,10 +105,18 @@ export function ProductTable({ products }: { products: Product[] }) {
       </div>
 
       {/* Aviso dados reais */}
-      <div className="flex items-center gap-2 rounded-md border border-zinc-700/50 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-400">
-        <AlertCircle size={14} />
-        <span>Preços Amazon são estimativas baseadas em múltiplos por categoria. Execute o scraper para atualizar.</span>
-      </div>
+      {products.some(p => p.search_keyword === 'demo') && (
+        <div className="flex items-center gap-2 rounded-md border border-yellow-700/50 bg-yellow-900/20 px-4 py-2.5 text-sm text-yellow-400">
+          <AlertCircle size={14} />
+          <span>Dados de demonstração — execute o scraper para substituir por produtos reais do AliExpress.</span>
+        </div>
+      )}
+      {!products.some(p => p.search_keyword === 'demo') && (
+        <div className="flex items-center gap-2 rounded-md border border-zinc-700/50 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-400">
+          <AlertCircle size={14} />
+          <span>Preços Amazon são estimativas baseadas em múltiplos por categoria. Execute o scraper para atualizar.</span>
+        </div>
+      )}
 
       {/* Tabela */}
       <div className="rounded-lg border border-zinc-800 overflow-hidden">

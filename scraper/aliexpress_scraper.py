@@ -12,8 +12,8 @@ async def _extract_products(page: Page, keyword: str, category: str,
     products = []
 
     try:
-        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_timeout(3000)
+        await page.goto(url, wait_until="networkidle", timeout=45000)
+        await page.wait_for_timeout(4000)
 
         # Fecha popup de localização se aparecer
         try:
@@ -146,18 +146,49 @@ async def scrape_keywords(keywords_by_category: list[dict]) -> list[dict]:
 
     all_products = []
 
+    # Script injetado em cada frame antes de qualquer JS da pagina executar.
+    # Mascara as propriedades que o Baxia/AliExpress usa para detectar headless.
+    stealth_script = """
+        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+        Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3,4,5]});
+        Object.defineProperty(navigator, 'languages', {get: () => ['en-US','en']});
+        Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
+        Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 8});
+        window.chrome = {runtime: {}};
+        const getParameter = WebGLRenderingContext.prototype.getParameter;
+        WebGLRenderingContext.prototype.getParameter = function(p) {
+            if (p === 37445) return 'Intel Inc.';
+            if (p === 37446) return 'Intel Iris OpenGL Engine';
+            return getParameter.call(this, p);
+        };
+    """
+
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
-            args=["--no-sandbox", "--disable-blink-features=AutomationControlled"]
+            args=[
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+            ]
         )
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             viewport={"width": 1280, "height": 800},
             locale="en-US",
+            extra_http_headers={
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            },
         )
+        await context.add_init_script(stealth_script)
         page = await context.new_page()
+
+        # Visita a home primeiro para simular sessao real e pegar cookies
+        await page.goto("https://www.aliexpress.com/", wait_until="domcontentloaded", timeout=30000)
+        await page.wait_for_timeout(2000)
 
         for cat in keywords_by_category:
             print(f"  Categoria: {cat['name']}")
