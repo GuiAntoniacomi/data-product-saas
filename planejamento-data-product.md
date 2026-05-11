@@ -1,6 +1,32 @@
 # 🛒 Plano de Negócio — Dropshipping → Private Label → SaaS
 > Documento de planejamento e checklist gerado a partir do brainstorming inicial.
-> Última atualização: Maio 2026 — v4 (Abordagem Dogfooding adicionada)
+> Última atualização: Maio 2026 — v5 (Semana 0 concluída — app base + Módulo 1A em desenvolvimento)
+
+---
+
+## 🟢 Status Atual — Maio 2026
+
+### O que foi construído (Semana 0)
+
+| Item | Status | Detalhe |
+|------|--------|---------|
+| App web base (Next.js 16) | ✅ Feito | Full-stack, App Router, TypeScript |
+| Autenticação (Supabase Auth) | ✅ Feito | Login/cadastro, proteção de rotas |
+| Banco de dados (Supabase) | ✅ Feito | `ts_product_cache` + `ts_scraper_jobs` |
+| Deploy (Vercel) | ✅ Feito | Projeto "Vantis" — `ivuqqezhzhcjwzcakcmm` |
+| Repositório GitHub | ✅ Feito | `GuiAntoniacomi/data-product-saas` |
+| Scraper AliExpress (Playwright) | ✅ Feito | 5 categorias, filtros de qualidade |
+| Score de oportunidade | ✅ Feito | Margem 40% + Pedidos 30% + Reviews 20% + Rating 10% |
+| Estimativa de preço Amazon | ✅ Feito | Multiplicador por categoria (3.4×–4.2×) — sem Keepa |
+| Botão "Executar Scraper" no app | ✅ Feito | Job assíncrono com polling de status |
+| GitHub Actions cron diário | ✅ Feito | 8h Brasília (11:00 UTC) |
+| Dashboard de produtos com filtros | ✅ Feito | Busca, categoria, margem mínima |
+| Dependências instaladas | ✅ Feito | Playwright Chromium + httpx + beautifulsoup4 |
+
+### Pendente para validar Módulo 1A
+- [ ] Adicionar `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` nos GitHub Secrets
+- [ ] Executar scraper pela primeira vez e confirmar produtos no dashboard
+- [ ] Avaliar qualidade dos produtos encontrados vs. critérios reais de negócio
 
 ---
 
@@ -46,15 +72,15 @@ AliExpress (fornecedor)
 **Objetivo:** Identificar automaticamente produtos com boa margem e demanda real já consolidada.
 
 #### Checklist de funcionalidades:
-- [ ] Conexão com AliExpress Affiliate API (menos agressiva que scraping)
-- [ ] Scraper complementar de produtos mais vendidos por categoria
-- [ ] Coleta de: preço do fornecedor, reviews, volume de vendas, tempo de envio
-- [ ] Cruzamento com Amazon via **Keepa API** ou **Rainforest API** (preço médio do mesmo produto)
-- [ ] Cálculo automático de margem estimada:
-  - Preço AliExpress + frete estimado + taxa Amazon (~15%) + FBA
-- [ ] Filtro configurável: margem mínima X% e máximo Y concorrentes
-- [ ] Score de oportunidade por produto
-- [ ] Output: ranking de produtos com margem calculada, prontos para avaliação
+- [x] ~~Conexão com AliExpress Affiliate API~~ → **Scraper Playwright** (sem API paga)
+- [x] Scraper de produtos mais vendidos por categoria (5 categorias: Casa, Pets, Fitness, Jardim, Ferramentas)
+- [x] Coleta de: preço do fornecedor, reviews, volume de vendas, rating
+- [x] ~~Keepa / Rainforest API~~ → **Estimativa por multiplicador de categoria** (3.4×–4.2×) — sem custo
+- [x] Cálculo automático de margem: `(amazon_est - ali - taxa_amazon) / amazon_est`
+- [x] Filtro configurável no dashboard: margem mínima, categoria, busca por nome
+- [x] Score de oportunidade: `margem×40% + pedidos×30% + reviews×20% + rating×10%`
+- [x] Dashboard web com tabela de produtos ordenada por score
+- [ ] Validação real: confirmar que os produtos encontrados têm demanda real na Amazon
 
 ---
 
@@ -224,14 +250,17 @@ Gratuito                      →   Assinatura mensal em USD
 Configuração manual           →   Onboarding guiado
 ```
 
-### Stack técnica recomendada:
+### Stack técnica real (atualizado em Mai/2026):
 
-- **Backend:** Python (FastAPI) — aproveita todo código já escrito nas Fases 1 e 2
-- **Frontend:** React + Tailwind — dashboard limpo e responsivo
-- **Banco:** PostgreSQL (usuários, histórico) + Redis (cache de tendências)
-- **Autenticação:** Supabase Auth
-- **Pagamentos:** Stripe (assinatura recorrente em USD)
-- **Deploy:** Vercel (frontend) + Railway ou Render (backend)
+- **Full-stack:** Next.js 16 (App Router) — unifica frontend + backend, sem FastAPI separado
+- **Estilo:** Tailwind CSS + dark theme (zinc/violet)
+- **Banco:** Supabase (PostgreSQL gerenciado + Auth + RLS por usuário)
+- **Scraper:** Python + Playwright (headless Chromium, assíncrono)
+- **Comunicação scraper → DB:** httpx direto na REST API do Supabase (service role)
+- **Jobs:** assíncrono via `spawn` detached no Next.js + polling via Supabase
+- **Agendamento:** GitHub Actions cron (diário 8h Brasília)
+- **Pagamentos:** Stripe (a implementar na Fase 3)
+- **Deploy:** Vercel (app) — repositório `GuiAntoniacomi/data-product-saas`
 
 ### Planos sugeridos (a validar com mercado):
 
@@ -270,9 +299,9 @@ Configuração manual           →   Onboarding guiado
 
 ### Para o SaaS (Fase 3):
 - [ ] **Stripe** (pagamentos recorrentes em USD)
-- [ ] **Supabase** (banco de dados + autenticação)
-- [ ] **Vercel** (deploy do frontend)
-- [ ] **Railway ou Render** (deploy do backend Python)
+- [x] **Supabase** (banco de dados + autenticação) — projeto Vantis ativo
+- [x] **Vercel** (deploy do app Next.js)
+- [x] **GitHub** (repositório + Actions para cron) — `GuiAntoniacomi/data-product-saas`
 - [ ] Domínio próprio para o produto
 
 ---
@@ -298,17 +327,19 @@ Configuração manual           →   Onboarding guiado
 **— PRÉ-FASE: Infraestrutura do App (base de tudo) —**
 ```
 1. Criar conta Amazon Seller
-2. Construir o app web base — já como SaaS desde o início:
-   - Frontend web (React + Tailwind)
-   - Backend (FastAPI)
-   - Autenticação (Supabase)
-   - Deploy (Vercel + Railway)
+2. ✅ Construir o app web base — já como SaaS desde o início:
+   - ✅ Frontend web (Next.js 16 + Tailwind)
+   - ✅ Backend (API Routes no Next.js — sem FastAPI separado)
+   - ✅ Autenticação (Supabase)
+   - ✅ Deploy (Vercel)
+   - ✅ Scraper Python + Playwright com trigger pelo app
    → Você é o primeiro e único usuário nessa etapa
 ```
 
 **— FASE 1: Gerar Caixa (usando o app) —**
 ```
-3.  Construir Módulo 1A dentro do app (Motor de Descoberta — produtos consolidados)
+3.  🔄 Construir Módulo 1A dentro do app (Motor de Descoberta — produtos consolidados)
+    ✅ Scraper AliExpress, score, dashboard — pendente: validação com dados reais
 4.  Construir Módulo 1B dentro do app (Tendências Emergentes)
 5.  Usar o app para descobrir produtos reais e publicar na Amazon manualmente
 6.  Validar: os produtos que o app recomenda realmente vendem?
