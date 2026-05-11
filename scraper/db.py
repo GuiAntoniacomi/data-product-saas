@@ -1,29 +1,54 @@
 import os
-from supabase import create_client, Client
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
 
-_client: Client | None = None
+_headers: dict | None = None
+_base_url: str | None = None
 
 
-def get_client() -> Client:
-    global _client
-    if _client is None:
+def _get(url: str, headers: dict) -> tuple[str, dict]:
+    return url, headers
+
+
+def _init():
+    global _headers, _base_url
+    if _headers is None:
         url = os.environ["SUPABASE_URL"]
         key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
-        _client = create_client(url, key)
-    return _client
+        _base_url = f"{url}/rest/v1"
+        _headers = {
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal",
+        }
 
 
 def update_job(job_id: str, **fields):
-    get_client().table("ts_scraper_jobs").update(fields).eq("id", job_id).execute()
+    _init()
+    httpx.patch(
+        f"{_base_url}/ts_scraper_jobs",
+        headers=_headers,
+        params={"id": f"eq.{job_id}"},
+        json=fields,
+    ).raise_for_status()
 
 
 def save_products(products: list[dict]):
     if not products:
         return
-    # Limpa cache antigo das mesmas keywords antes de inserir
+    _init()
     keywords = list({p["search_keyword"] for p in products})
-    get_client().table("ts_product_cache").delete().in_("search_keyword", keywords).execute()
-    get_client().table("ts_product_cache").insert(products).execute()
+    quoted = ",".join(f'"{k}"' for k in keywords)
+    httpx.delete(
+        f"{_base_url}/ts_product_cache",
+        headers=_headers,
+        params={"search_keyword": f"in.({quoted})"},
+    ).raise_for_status()
+    httpx.post(
+        f"{_base_url}/ts_product_cache",
+        headers={**_headers, "Prefer": "return=minimal"},
+        json=products,
+    ).raise_for_status()
