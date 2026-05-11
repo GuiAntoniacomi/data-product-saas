@@ -25,8 +25,28 @@
 
 ### Pendente para validar Módulo 1A
 - [ ] Adicionar `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` nos GitHub Secrets
-- [ ] Executar scraper pela primeira vez e confirmar produtos no dashboard
+- [ ] Implementar scraper Amazon Movers & Shakers (ver decisão abaixo)
 - [ ] Avaliar qualidade dos produtos encontrados vs. critérios reais de negócio
+
+### Decisão de arquitetura — Fonte de dados do Módulo 1A
+
+**Problema:** O AliExpress bloqueia 100% das tentativas de scraping (headless Playwright, httpx, mobile endpoint) via sistema anti-bot Baxia. Nenhuma abordagem sem autenticação funciona a partir de IP residencial brasileiro.
+
+**Decisão tomada:** Trocar a fonte para **Amazon Movers & Shakers** (Opção B).
+
+**Por que funciona melhor:**
+- Páginas públicas da Amazon (`amazon.com/gp/movers-and-shakers/<categoria>/`) são acessíveis sem autenticação
+- Dá **preços Amazon reais** em vez de estimativas por multiplicador
+- Mostra produtos com demanda comprovada e em crescimento
+- Lógica invertida: `preço_aliexpress_estimado = amazon_price / multiplicador_categoria`
+
+**O que muda no scraper:**
+- `aliexpress_scraper.py` → substituir por `amazon_movers_scraper.py`
+- Campos `aliexpress_price` passam a ser estimativas (ao invés de `estimated_amazon_price`)
+- URL do produto aponta para Amazon em vez de AliExpress
+- O usuário busca o fornecedor no AliExpress manualmente a partir do produto identificado
+
+**Alternativa futura (Opção A):** AliExpress Affiliate API — cadastro gratuito em portals.aliexpress.com — pode ser implementada depois para cruzar dados de fornecedor com os produtos identificados via Amazon.
 
 ---
 
