@@ -35,7 +35,7 @@ async def run(job_id: str | None, category_filter: list[str] | None):
     if job_id:
         update_job(job_id, status="running", started_at=datetime.now(timezone.utc).isoformat())
 
-    print(f"Iniciando scraper — {len(categories)} categoria(s)")
+    print(f"Iniciando scraper - {len(categories)} categoria(s)")
     try:
         products = await scrape_keywords(categories)
         print(f"\nTotal: {len(products)} produto(s) encontrado(s)")

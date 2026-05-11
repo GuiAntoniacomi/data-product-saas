@@ -35,6 +35,8 @@ export async function POST(request: Request) {
       ...process.env,
       SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      PYTHONIOENCODING: 'utf-8',
+      PYTHONUTF8: '1',
     },
   })
   child.unref()

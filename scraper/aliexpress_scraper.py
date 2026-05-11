@@ -167,7 +167,7 @@ async def scrape_keywords(keywords_by_category: list[dict]) -> list[dict]:
                     page, keyword, cat["name"],
                     cat["amazon_multiplier"], AMAZON_FEE_PCT
                 )
-                print(f"    → {len(products)} produto(s) encontrado(s)")
+                print(f"    -> {len(products)} produto(s) encontrado(s)")
                 all_products.extend(products)
                 await asyncio.sleep(2)  # pausa entre requests
 
@@ -180,4 +180,4 @@ if __name__ == "__main__":
     from aliexpress_config import CATEGORIES
     results = asyncio.run(scrape_keywords(CATEGORIES))
     for p in results:
-        print(f"{p['score']:3d} | {p['margin_pct']:3d}% | ${p['aliexpress_price']:.2f} → ${p['estimated_amazon_price']:.2f} | {p['name'][:60]}")
+        print(f"{p['score']:3d} | {p['margin_pct']:3d}% | ${p['aliexpress_price']:.2f} -> ${p['estimated_amazon_price']:.2f} | {p['name'][:60]}")
