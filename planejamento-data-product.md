@@ -1,434 +1,342 @@
-# Planejamento: Data Product SaaS
-> Versão 2.0 — Maio 2026  
-> Autor: Guilherme  
-> Objetivo: Construir autonomia financeira com expertise em Data Engineering, sem abandonar emprego atual
+# 🛒 Plano de Negócio — Dropshipping → Private Label → SaaS
+> Documento de planejamento e checklist gerado a partir do brainstorming inicial.
+> Última atualização: Maio 2026 — v4 (Abordagem Dogfooding adicionada)
 
 ---
 
-## Visão & Princípios
+## 🗺️ Visão Geral da Estratégia
 
-### A Tese Central
-> *"Você não está aprendendo a vender. Você está resolvendo um problema com métrica clara para alguém que já sofre com ele. Isso se vende sozinho."*
+O plano está dividido em **três fases sequenciais**:
 
-### Os 3 Pilares
-1. **Validação antes de construção** — nunca desenvolver algo que ninguém pediu
-2. **Consultoria → Produto** — aprender com clientes reais antes de automatizar
-3. **5-10h/semana** — não é uma startup, é um projeto paralelo com risco controlado
+| Fase | Modelo | Objetivo | Canal |
+|------|--------|----------|-------|
+| **Fase 1** | Dropshipping (produto genérico da China) | Gerar caixa + validar as ferramentas | Amazon |
+| **Fase 2** | Private Label (marca própria com branding) | Construir ativo de marca escalável | Shopify + Instagram/TikTok |
+| **Fase 3** | SaaS (vender as ferramentas que construímos) | Receita recorrente de alta margem | App Web B2B para vendedores |
 
-### O que você TEM (e muitos não têm)
-- [ ] Expertise em BigQuery, Looker, LookML, pipelines Silver/Gold
-- [ ] Visão de negócio + dados (raro em engenheiros)
-- [ ] Case real e complexo (The Coffee): franquias, royalties, clustering, metas
-- [ ] Salário que cobre o básico (você pode falhar sem catástrofe)
-- [ ] 35 anos de contexto de mercado (não é ingenuidade)
+> 💡 **A lógica do ecossistema:** A Fase 1 é a pesquisa de mercado paga para a Fase 2. As ferramentas que você usa na Fase 1 e 2 se tornam o produto da Fase 3. Cada fase financia e valida a próxima.
+
+> 🐾 **Princípio Dogfooding:** O SaaS será construído para uso próprio desde o primeiro dia — não como scripts locais que depois viram produto, mas já como app web real. Você usa a ferramenta para rodar o dropshipping, valida a estratégia de negócio e valida o produto simultaneamente, com o mesmo esforço.
 
 ---
 
-## Roadmap: 12 Semanas
+## 📦 FASE 1 — Dropshipping na Amazon
 
+### Conceito
+- Produto genérico chinês comprado no AliExpress
+- Vendido na Amazon sem estoque físico
+- Quando o pedido entra → compra automática no AliExpress no endereço do cliente
+
+### Pipeline completo
 ```
-Semana 0     │  PREPARAÇÃO    │  Ferramentas + credenciais + case study
-Semanas 1-2  │  DESCOBERTA    │  Pesquisa manual + scraping como acelerador
-Semanas 3-4  │  VALIDAÇÃO     │  Cold outreach + 5-7 calls com leads
-Semanas 5-6  │  PROTOTIPAGEM  │  MVP para 1 nicho escolhido
-Semanas 7-8  │  VENDA         │  Primeira consultoria paga
-Semanas 9-12 │  APRENDIZADO   │  Iterar, documentar, repetir
-```
-
----
-
-## SEMANA 0 — Preparação (antes de começar o cronômetro)
-
-### Objetivo
-Ter tudo pronto para não perder tempo com setup nas semanas pagas.
-
-### Checklist
-
-#### Ferramentas
-- [ ] Importar `templates/planilha_sinais_dor.csv` no Google Sheets (sua central de pesquisa)
-- [ ] Configurar Calendly com slot de 15 min ("Call de Descoberta — Gratuita")
-- [ ] Criar email com assinatura profissional: nome, cargo, link LinkedIn, Calendly
-
-#### Perfil LinkedIn
-- [ ] Headline: `Data Engineer → Ajudo [nicho] a transformar dados dispersos em decisões claras`
-- [ ] About: 3 parágrafos — problema que você resolve, como você resolve, quem você é
-- [ ] Featured: adicionar 1 post sobre The Coffee (quando pronto) ou insight de dados
-
-#### Case Study — The Coffee (seu maior ativo)
-- [ ] Escrever documento de 1-2 páginas com estrutura:
-  - Contexto (sem nome real): "Rede de franquias, X lojas, setor food service"
-  - Problema: sem visibilidade centralizada de performance por loja
-  - Solução: pipeline Silver/Gold + dashboard de clusters + ranking de lojas
-  - Resultado: qual decisão ficou mais fácil? Qual dado antes era cego?
-- [ ] Salvar como PDF e link no Google Drive (para compartilhar nas calls)
-
-#### Infraestrutura de scraping
-- [ ] Criar app Reddit em https://www.reddit.com/prefs/apps
-- [ ] Preencher `scraper/.env` com credenciais (seguir `scraper/README_scraper.md`)
-- [ ] Rodar `pip install -r scraper/requirements.txt`
-- [ ] Testar com `python scraper/reddit_scraper.py` para confirmar que funciona
-
----
-
-## FASE 1 — Descoberta (Semanas 1-2)
-
-### Objetivo
-Identificar 1 nicho com dor real, recorrente e disposição de pagar.
-
-### Nichos candidatos (começar com 3)
-- [ ] **E-commerce** (Shopify + Google Ads + Meta Ads sem unificação de dados)
-- [ ] **SaaS startups** (crescimento rápido, dados espalhados em 10+ ferramentas)
-- [ ] **Franquias/redes de lojas** (seu case natural — The Coffee como template)
-
----
-
-### Semana 1 — Pesquisa Manual (~3-4h total)
-
-**Por que manual primeiro?** Mais rápido para calibrar o que é sinal real de dor. O script da Semana 2 escala o que você já entende.
-
-#### Reddit (manual)
-Buscar diretamente em cada subreddit:
-- [ ] `r/ecommerce` — prioridade alta
-- [ ] `r/shopify` — prioridade alta
-- [ ] `r/SaaS` — prioridade alta
-- [ ] `r/startups`
-- [ ] `r/analytics`
-- [ ] `r/dataengineering`
-- [ ] `r/businessintelligence`
-
-Queries a usar na busca:
-- `"we can't see"` + `data`
-- `"we're spending too much"` + `analytics`
-- `"pipeline broke"`
-- `"can't track"` + `revenue`
-- `"data mess"`
-- `"too many tools"`
-- `"nobody knows where the data is"`
-- `"manually exporting"` + `data`
-- `"stuck in spreadsheets"`
-
-Anotar na planilha: pelo menos **20-25 sinais** ao final da Semana 1.
-
-#### Product Hunt (manual, ~30 min)
-- [ ] Reviews negativos de: Segment, Fivetran, Metabase, Supermetrics, Redash, Airbyte
-- [ ] Pergunta-chave: qual problema prometia resolver? Por que o review é negativo?
-- [ ] Anotar: dor que o produto não resolveu → oportunidade de consultoria
-
-#### LinkedIn (manual, ~30 min)
-- [ ] Busca avançada por posts com:
-  - `"data is a mess"`
-  - `"can't trust our numbers"`
-  - `"analytics is broken"`
-  - `"we need someone to"`
-- [ ] Salvar: perfil + problema mencionado + link na aba "Leads" da planilha
-
-#### Pesquisa Competitiva (~1h — nova tarefa)
-Entender quem mais resolve isso e como se posicionam:
-- [ ] Buscar no Upwork: `BigQuery consultant`, `data pipeline freelancer`, `BI dashboard`
-  - Anotar: preço médio, como descrevem o serviço, quais dores destacam
-- [ ] Buscar no LinkedIn: `data engineering freelancer` + `data consultant`
-  - Anotar: como se posicionam, que nicho atendem, que resultado prometem
-- [ ] Conclusão: qual gap de posicionamento você pode preencher?
-
----
-
-### Semana 2 — Escalar com Script (~3-4h total)
-
-- [ ] Rodar `python scraper/reddit_scraper.py` (configurado na Semana 0)
-- [ ] Importar CSV gerado na aba "Sinais de Dor" do Google Sheets
-- [ ] Remover duplicatas com pesquisa manual
-- [ ] Completar até **50+ sinais** no total
-- [ ] Preencher aba "Resumo por Nicho" na planilha
-- [ ] Decidir: **qual nicho avançar para Fase 2?** (maior frequência + maior intensidade de dor)
-
-### Deliverable da Fase 1
-- [ ] Spreadsheet com **50+ sinais de dor**
-  - Colunas: Fonte | Nicho | Problema descrito | Link | Intensidade (1-5) | Disposição de pagar? | Data | Status
-- [ ] **1 nicho prioritário** escolhido com justificativa documentada
-- [ ] Visão inicial dos competidores (preço, posicionamento, gap)
-
----
-
-## FASE 2 — Validação (Semanas 3-4)
-
-### Objetivo
-Falar com pessoas reais. Aprender, não vender.
-
-### Cold Outreach Template
-
-**Subject:** Visto que você mencionou problema com [X dados]
-
-```
-Olá [Nome],
-
-Vi que você mencionou dificuldade com [problema específico].
-
-Trabalho há anos com pipelines de dados em BigQuery e especializo 
-em centralizar fontes como [Shopify + Ads + CRM] em dashboards 
-automáticos que reduzem custo e aumentam visibilidade.
-
-Você toparia uma call de 15 minutos? Sem venda — quero entender 
-melhor o seu cenário e ver se consigo ajudar.
-
-Abraço,
-Guilherme
-```
-
-> **Regra de ouro:** Personalizar os primeiros 2 parágrafos com o problema EXATO da pessoa.
-
-### Checklist de cada call de validação
-- [ ] Gravar ou anotar (com permissão)
-- [ ] Perguntar: "Me conta como você atualmente [resolve o problema]?"
-- [ ] Perguntar: "Quanto tempo/dinheiro você perde com isso por mês?"
-- [ ] Perguntar: "Já tentou resolver antes? Por que não funcionou?"
-- [ ] Perguntar: "Se eu resolvesse isso, o que seria diferente na sua operação?"
-- [ ] **NÃO** apresentar solução ainda — só ouvir
-- [ ] Finalizar: "Você pagaria por uma solução? Quanto faz sentido?"
-- [ ] Anotar na aba "Calls de Validação" da planilha imediatamente após
-
-### Meta da Fase 2
-- [ ] Realizar **5-7 calls**
-- [ ] Identificar **padrão de dor comum** entre pelo menos 3 pessoas
-- [ ] Ter ao menos **2-3 leads quentes** (disseram que pagariam)
-
-### Deliverable da Fase 2 — Problem Brief (novo)
-Além das calls, escrever um documento de 1 página:
-
-```
-PROBLEM BRIEF — [Nicho Escolhido]
-
-Nicho: ___________________________________
-Dor principal (em palavras exatas dos prospects):
-"_______________________________________________"
-
-Dor secundária:
-"_______________________________________________"
-
-Objeções mais comuns ouvidas:
-1. ___________________________________________
-2. ___________________________________________
-
-ROI que o cliente enxerga (o que melhora na operação):
-___________________________________________________
-
-Conclusão: vale construir MVP? [ ] Sim  [ ] Não  [ ] Precisa de mais dados
-```
-
-> Este documento vira a base da proposta comercial na Fase 4.
-
----
-
-## FASE 3 — Prototipagem (Semanas 5-6)
-
-### Objetivo
-Construir a solução mínima que resolve o problema validado.
-
-### MVP para nicho E-commerce (exemplo)
-
-**Problema:** Shopify + Google Ads + Meta Ads sem dados unificados.  
-**Solução:** Pipeline que centraliza tudo em BigQuery + 3 dashboards essenciais.
-
-#### Componentes técnicos
-- [ ] Conexão via API: Shopify (pedidos, produtos, clientes)
-- [ ] Conexão via API: Google Ads (spend, conversões, ROAS)
-- [ ] Conexão via API: Meta Ads (spend, CPC, CPM)
-- [ ] Camada Silver no BigQuery (limpeza + deduplicação)
-- [ ] Camada Gold no BigQuery (fact tables unificadas)
-- [ ] Dashboard Looker Studio: Visão executiva (3 KPIs principais)
-- [ ] Dashboard Looker Studio: Análise de campanhas (performance por canal)
-- [ ] Dashboard Looker Studio: Vendas por produto/SKU
-
-#### Critérios de "pronto"
-- [ ] Funciona sem intervenção manual após setup inicial
-- [ ] Atualiza automaticamente (scheduled queries ou Datastream)
-- [ ] Documentação básica de 1 página para o cliente
-- [ ] Tempo de entrega: máximo 2 semanas de trabalho real
-
-### MVP para nicho Franquias (seu caso natural)
-
-**Problema:** Rede de franquias sem visibilidade centralizada de performance por loja.  
-**Solução:** Pipeline medalhão + dashboard de clusters de performance.
-
-- [ ] Adaptar arquitetura The Coffee (Silver/Gold) para modelo genérico
-- [ ] Criar template parametrizável por rede (multi-tenant básico)
-- [ ] Dashboard: Ranking de lojas, clusters, ticket médio, adoção digital
-
----
-
-## FASE 4 — Primeira Venda (Semanas 7-8)
-
-### Objetivo
-Fechar primeiro contrato de consultoria. Gerar receita real.
-
-### Pacote de Entrada (posicionamento)
-
-```
-Data Foundation Package
-
-Inclui:
-  ✔ Diagnóstico completo do ambiente de dados (2h)
-  ✔ Pipeline customizado com fontes do cliente (5 dias)
-  ✔ 3 dashboards operacionais (Looker Studio)
-  ✔ Documentação técnica + handoff
-  ✔ 30 dias de suporte pós-entrega
-
-Preço: USD $3.000 – $6.000
-(ou R$ 15.000 – 30.000 para clientes BR)
-```
-
-> **Por que em dólar?** Mercado global, cliente BR paga em real. Mas precificar em USD abre Upwork, LinkedIn global e LatAm.
-
-### Checklist para fechar a venda
-- [ ] Enviar proposta simples em PDF (1 página: problema → solução → preço → prazo)
-- [ ] Definir forma de pagamento: 50% entrada + 50% na entrega
-- [ ] Contrato simples: escopo claro, o que está e o que NÃO está incluído
-- [ ] Definir canal de comunicação (Slack, WhatsApp, e-mail)
-- [ ] Estabelecer critérios de aceite (o que significa "pronto")
-
-### Objeções comuns e como responder (novo)
-
-| Objeção | Resposta |
-|---------|----------|
-| "Está caro" | Calcule juntos: quantas horas/mês são perdidas com dados manuais × custo/hora → mostre o payback |
-| "Preciso pensar" | "Entendo. Posso oferecer um diagnóstico gratuito de 30 min antes — você decide com mais clareza" |
-| "Já tentamos e não funcionou" | "O que você tentou? O que não funcionou?" → identificar gap → mostrar como seu approach é diferente |
-| "Não temos budget agora" | Propor escopo reduzido: só o diagnóstico + 1 dashboard por R$5.000, ou retainer mensal menor |
-| "Você tem referências?" | Usar o case study The Coffee (anonimizado) + oferecer contato com ex-cliente se possível |
-
----
-
-## FASE 5 — Iteração e Escala (Semanas 9-12)
-
-### Objetivo
-Aprender com o primeiro cliente. Identificar o que pode virar produto.
-
-### Perguntas a responder ao final do primeiro projeto
-- [ ] Qual parte levou mais tempo do que deveria? → Automatizar
-- [ ] O que o cliente mais valorizou? → Dobrar aposta nisso
-- [ ] O que o cliente pediu que não estava no escopo? → Próximo pacote
-- [ ] Qual foi o ROI mensurável para o cliente? → Usar como case
-- [ ] Daria pra replicar isso para outro cliente com 50% menos esforço? → Caminho para SaaS
-
-### Próximos pacotes (evolução natural)
-```
-Nível 1 (Atual):     Data Foundation Package    │ $3k-6k por projeto
-Nível 2 (Mês 3-6):   Data Retainer              │ $1k-2k/mês (manutenção + evolução)
-Nível 3 (Mês 6-12):  Template SaaS              │ $200-500/mês por cliente (self-serve)
+AliExpress (fornecedor)
+    → Motor de descoberta de produtos (scraping/API)
+        → Score de viabilidade (margem, ranking, reviews)
+            → Listing na Amazon (via SP-API)
+                → Pedido do cliente
+                    → Compra automática no AliExpress
+                        → Entrega ao cliente
 ```
 
 ---
 
-## Métricas de Sucesso (por fase)
+## 🛠️ FERRAMENTAS A CONSTRUIR
 
-| Fase | Métrica | Meta |
-|------|---------|------|
-| Preparação | Case study pronto | 1 documento |
-| Descoberta | Sinais de dor coletados | 50+ |
-| Validação | Calls realizadas | 5-7 |
-| Validação | Leads quentes identificados | 2-3 |
-| Validação | Problem Brief escrito | 1 documento |
-| Prototipagem | Dias para entregar MVP | ≤ 14 dias |
-| Venda | Contratos fechados | 1 |
-| Venda | Receita gerada | ≥ R$ 10.000 |
-| Iteração | NPS do cliente | ≥ 8/10 |
-| Iteração | Segundo projeto | 1 referral ou recontrato |
+### 🔍 Módulo 1A — Motor de Descoberta de Produtos (Mercado Atual)
+**Objetivo:** Identificar automaticamente produtos com boa margem e demanda real já consolidada.
 
----
-
-## Posicionamento & Mensagem
-
-### Para o mercado (como você se apresenta)
-> *"Ajudo empresas de e-commerce e redes de franquias a transformarem dados espalhados em decisões claras — com pipelines automatizados, dashboards executivos e uma arquitetura que escala junto com o negócio."*
-
-### Para você mesmo (quando bater medo)
-> *"Eu já faço isso. Todo dia. Só estou cobrando por isso de outras pessoas."*
+#### Checklist de funcionalidades:
+- [ ] Conexão com AliExpress Affiliate API (menos agressiva que scraping)
+- [ ] Scraper complementar de produtos mais vendidos por categoria
+- [ ] Coleta de: preço do fornecedor, reviews, volume de vendas, tempo de envio
+- [ ] Cruzamento com Amazon via **Keepa API** ou **Rainforest API** (preço médio do mesmo produto)
+- [ ] Cálculo automático de margem estimada:
+  - Preço AliExpress + frete estimado + taxa Amazon (~15%) + FBA
+- [ ] Filtro configurável: margem mínima X% e máximo Y concorrentes
+- [ ] Score de oportunidade por produto
+- [ ] Output: ranking de produtos com margem calculada, prontos para avaliação
 
 ---
 
-## Anti-padrões (o que NÃO fazer)
+### 🧠 Módulo 1B — Inteligência de Tendências Emergentes
+**Objetivo:** Detectar produtos com demanda crescente *antes* que a concorrência chegue. Enquanto o Módulo 1A olha o que já vende, este olha o que **vai vender**.
 
-- [ ] Construir sem validar ("Build it and they will come" — não vêm)
-- [ ] Esperar o produto estar perfeito para vender
-- [ ] Oferecer "tudo que o cliente pedir" sem escopo definido
-- [ ] Trabalhar de graça pra "ganhar experiência" (você já tem experiência)
-- [ ] Comparar seu início com o meio do jogo de outra pessoa
-- [ ] Colocar mais "não sei" do que "vou aprender"
-- [ ] Esperar inspiração. Começar gera inspiração.
-
----
-
-## Stack Técnica do Projeto
-
-### Data Engineering (seu domínio)
-- BigQuery (armazenamento, transformação, scheduled queries)
-- Datastream / APIs REST (ingestão)
-- SQL (CTEs, Window Functions, MERGE, deduplicação)
-- Arquitetura Medalhão (Bronze → Silver → Gold)
-
-### BI & Visualização
-- Looker Studio (dashboards executivos para clientes)
-- Looker Pro / LookML (para clientes com necessidade de drill-down)
-
-### Automação & Scraping
-- Python (PRAW para Reddit, requests, pandas)
-- `scraper/reddit_scraper.py` — pronto para uso na Semana 2
-- Google Sheets para armazenar e analisar leads
-
-### Venda & Marketing
-- LinkedIn (posts 1x/semana sobre problema que você resolve)
-- Email simples (Gmail com assinatura profissional)
-- Proposta em PDF (Notion, Canva ou Google Docs)
-- Calendly (para agendar calls sem fricção)
-
----
-
-## LinkedIn Content Calendar (novo)
-
-Cadência: **1 post/semana**, atrelado ao que você está aprendendo.
-
-| Semanas | Tema |
-|---------|------|
-| 1-2 | "O problema que [nicho] tem com dados" — baseado na pesquisa de dor |
-| 3-4 | "O que aprendi conversando com X founders sobre dados" |
-| 5-6 | "Como construo um pipeline de dados para [resultado] em [prazo]" |
-| 7-8 | Bastidores da primeira venda (sem revelar cliente) |
-| 9-12 | Resultados reais, case studies anonimizados, aprendizados |
-
-> Formato que converte melhor no LinkedIn: história curta (problema real) → insight → o que você faria diferente. Sem listicles genéricos.
-
----
-
-## Ritual Semanal
-
+#### Por que isso é vantagem competitiva:
 ```
-Segunda-feira (30 min):  Revisar métricas da semana + ajustar prioridades
-Quarta-feira (2h):       Trabalho técnico (scraping, MVP, documentação)
-Sexta-feira (1h):        Outreach (3-5 mensagens personalizadas) + 1 post LinkedIn
-Domingo (15 min):        Reflexão: o que aprendi? O que trava? O que muda?
+Tendência surge em cultura/mídia        ← 1B entra AQUI
+    → Vira busca no Google/TikTok       ← 1B entra AQUI
+        → Vira pedido no AliExpress
+            → Vira produto ranqueado na Amazon
+                → Concorrência explode  ← Módulo 1A já é tarde
 ```
 
+#### Fontes de sinal monitoradas:
+| Fonte | O que captura | Antecedência |
+|-------|--------------|--------------|
+| **TikTok** (#TikTokMadeMeBuyIt, trending products) | Viral orgânico, impulso de compra imediato | 1–7 dias |
+| **Reddit** (r/BuyItForLife, r/LifeProTips, r/malelivingspace, r/frugal) | Necessidade real articulada por consumidores | 7–30 dias |
+| **Google Trends** | Curva de busca ascendente sem oferta consolidada | 7–30 dias |
+| **Pinterest Trends** | Forte para casa, decoração, moda, beleza | 14–60 dias |
+| **Amazon Movers & Shakers** | Produtos que mais subiram no ranking nas últimas 24h | 1–3 dias |
+| **AliExpress New Arrivals** | Fornecedor apostando em produto novo com reviews crescendo | 30–90 dias |
+
+#### Arquitetura do agente:
+```
+Crawlers por fonte (TikTok + Reddit + Google Trends + Pinterest + Amazon M&S)
+    → LLM analisa padrões: frequência de menção, sentimento, intenção de compra
+        → Extrai: nome do produto, categoria, problema que resolve
+            → Cruza com AliExpress: "esse produto existe? qual o preço?"
+                → Cruza com Amazon: "quantos vendedores? reviews? concorrência?"
+                    → Score de oportunidade:
+                        alta demanda emergente + baixa oferta = 🟢 OPORTUNIDADE
+                        alta demanda + alta oferta = 🔴 TARDE DEMAIS
+```
+
+#### Checklist de funcionalidades:
+- [ ] Monitor de hashtags e produtos virais no **TikTok API** ou scraper
+- [ ] Leitor de posts e comentários relevantes no **Reddit API (PRAW)**
+- [ ] Monitor de termos no **Google Trends API (pytrends)**
+- [ ] Monitor de **Pinterest Trends**
+- [ ] Scraper diário do **Amazon Movers & Shakers** por categoria
+- [ ] Monitor de **AliExpress New Arrivals** com crescimento de reviews
+- [ ] LLM para consolidar sinais e extrair nomes de produtos acionáveis
+- [ ] Cruzamento automático: sinal de tendência → busca no AliExpress → busca na Amazon
+- [ ] Score composto: `(força do sinal × antecedência) / (nº de concorrentes na Amazon)`
+- [ ] Alerta diário com top 5 oportunidades emergentes
+- [ ] Histórico de tendências para aprendizado: quais sinais previram bem?
+
 ---
 
-## Checkpoints Críticos
+### 📝 Módulo 2 — Publicador de Listings na Amazon
+**Objetivo:** Criar e publicar anúncios na Amazon de forma automatizada.
 
-| Data | Checkpoint | Decisão se não atingir |
-|------|------------|----------------------|
-| Semana 0 | Case study pronto + ferramentas configuradas | Não avançar sem isso |
-| Semana 2 | Ter 50+ sinais de dor coletados | Ampliar fontes de busca |
-| Semana 4 | Ter feito 5+ calls + Problem Brief escrito | Revisar canal de outreach |
-| Semana 6 | MVP funcional entregue | Simplificar escopo |
-| Semana 8 | Primeiro contrato fechado | Revisar posicionamento e preço |
-| Semana 12 | Avaliação geral do projeto | Continuar, pivotar ou pausar |
-
----
-
-## Frase para o Espelho
-
-> *"Você tem 35 anos, expertise real, estabilidade financeira e tempo.  
-> O risco real é chegar aos 40 e perceber que nunca tentou.  
-> Comece feio. Aprenda rápido. Melhore sempre."*
+#### Checklist de funcionalidades:
+- [ ] Integração com **Amazon SP-API**
+- [ ] Criação de listing com: título, descrição, bullet points, fotos
+- [ ] Uso de **LLM para otimizar copy** (título SEO-friendly, descrição persuasiva)
+- [ ] Download automático de imagens do produto do AliExpress
+- [ ] Publicação em categoria correta
+- [ ] Monitoramento de status do listing (ativo, suspenso, etc.)
 
 ---
 
-*Última atualização: Maio 2026 — Versão 2.0*  
-*Próxima revisão: ao final da Semana 2*
+### 🤖 Módulo 3 — Agente de Fulfillment Automático
+**Objetivo:** Quando um pedido entra na Amazon, comprar automaticamente no AliExpress.
+
+#### Checklist de funcionalidades:
+- [ ] Listener de novos pedidos na Amazon SP-API
+- [ ] Trigger automático de compra no AliExpress com endereço do cliente
+- [ ] Mapeamento produto Amazon → produto AliExpress (evitar compra errada)
+- [ ] Atualização do código de rastreamento no pedido Amazon
+- [ ] Alerta em caso de falha na compra ou produto fora de estoque
+
+---
+
+### 💬 Módulo 4 — Agente de Atendimento ao Cliente
+**Objetivo:** Responder dúvidas de clientes automaticamente via Amazon.
+
+#### Checklist de funcionalidades:
+- [ ] Integração com mensagens do Amazon Seller Central
+- [ ] LLM treinado com contexto dos produtos vendidos
+- [ ] Respostas automáticas para perguntas comuns: prazo de entrega, status do pedido, trocas
+- [ ] Escalação para humano quando necessário
+- [ ] Monitoramento de reviews negativos para resposta rápida
+
+---
+
+### 📊 Módulo 5 — Dashboard de Performance
+**Objetivo:** Visão unificada do negócio para tomada de decisão.
+
+#### Checklist de funcionalidades:
+- [ ] Receita por produto e por período
+- [ ] Margem líquida por SKU
+- [ ] Taxa de reembolso e reclamações
+- [ ] Produtos com queda de ranking → sinal de substituição
+- [ ] Alertas de margem comprimida (ex: concorrente baixou preço)
+
+---
+
+## 🏗️ FASE 2 — Private Label (Marca Própria)
+
+### Conceito
+Produto genérico chinês + branding forte + storytelling = margem de 10x.
+A diferença não é o produto, é a **percepção de valor**.
+
+### Pipeline
+```
+Produto genérico AliExpress (identificado na Fase 1)
+    → Nome de marca própria
+        → Identidade visual premium (logo, embalagem, paleta)
+            → Copy com storytelling
+                → Shopify (site próprio)
+                    → Instagram/TikTok como vitrine
+                        → Amazon como canal secundário
+```
+
+### O que torna a Fase 1 essencial para a Fase 2:
+- Você vai saber **quais categorias têm demanda real**
+- Vai saber **o que os clientes reclamam nos reviews** → oportunidade de melhorar
+- O motor de descoberta vai identificar **produtos com alto volume mas sem vendedor com marca forte** → esse é o gap para entrar com branding
+
+### Checklist Fase 2 (futuro):
+- [ ] Definir nicho e produto campeão (validado na Fase 1)
+- [ ] Criar identidade de marca (nome, logo, paleta, tom de voz)
+- [ ] Montar Shopify com design premium
+- [ ] Produzir conteúdo para Instagram/TikTok
+- [ ] Negociar com fornecedor chinês para personalização de embalagem (MOQ mínimo)
+- [ ] Estratégia de lançamento com influenciadores de nicho
+
+---
+
+## 💻 FASE 3 — SaaS (A Ferramenta como Produto)
+
+### Conceito
+Tudo que construímos nas Fases 1 e 2 para uso próprio vira um **produto vendável para outros vendedores**. Você sai de usuário da ferramenta para dono da ferramenta.
+
+### Por que é o modelo mais lucrativo dos três:
+
+| | Dropshipping | Private Label | SaaS |
+|---|---|---|---|
+| Margem líquida | 5–20% | 40–60% | 70–90% |
+| Escalabilidade | Linear | Média | Exponencial |
+| Risco operacional | Alto | Médio | Baixo |
+| Ativo gerado | Nenhum | Marca | Produto recorrente |
+| 1000 clientes pagantes | Muito trabalho | Muito estoque | Mesmo custo de infra |
+
+### Competidores e onde nos diferenciamos:
+
+| Ferramenta | Preço/mês | Ponto fraco |
+|---|---|---|
+| Jungle Scout | ~$49 | Foco só em dados históricos da Amazon |
+| Helium 10 | ~$99 | Complexo, caro, sem detecção de tendências emergentes |
+| Zik Analytics | ~$29 | Foco em eBay, fraco em tendências |
+| **Nossa ferramenta** | **A definir** | **Módulo 1B — tendências via TikTok, Reddit, Google Trends — gap real do mercado** |
+
+### De scripts locais para produto SaaS:
+
+```
+HOJE (scripts locais)             FASE 3 (produto SaaS)
+─────────────────────             ──────────────────────
+Script Python rodando local   →   Backend em nuvem (AWS / GCP)
+Resultado no terminal         →   Dashboard web com UI limpa
+1 usuário (você)              →   Multi-tenant (N usuários)
+Gratuito                      →   Assinatura mensal em USD
+Configuração manual           →   Onboarding guiado
+```
+
+### Stack técnica recomendada:
+
+- **Backend:** Python (FastAPI) — aproveita todo código já escrito nas Fases 1 e 2
+- **Frontend:** React + Tailwind — dashboard limpo e responsivo
+- **Banco:** PostgreSQL (usuários, histórico) + Redis (cache de tendências)
+- **Autenticação:** Supabase Auth
+- **Pagamentos:** Stripe (assinatura recorrente em USD)
+- **Deploy:** Vercel (frontend) + Railway ou Render (backend)
+
+### Planos sugeridos (a validar com mercado):
+
+| Plano | Preço/mês | O que inclui |
+|---|---|---|
+| **Starter** | ~$19 | Módulo 1A — produtos consolidados, 50 buscas/dia |
+| **Growth** | ~$49 | 1A + 1B — tendências emergentes + alertas diários |
+| **Pro** | ~$99 | Tudo + publicador de listings + agente de fulfillment |
+
+### Checklist Fase 3:
+- [ ] Refatorar scripts locais em API REST (FastAPI)
+- [ ] Construir autenticação e sistema de planos por tier
+- [ ] Construir frontend web — dashboard de oportunidades de produtos
+- [ ] Integrar Stripe para cobrança recorrente em USD
+- [ ] Sistema multi-tenant (cada usuário vê só seus dados)
+- [ ] Onboarding guiado (conectar conta Amazon, configurar categorias de interesse)
+- [ ] Landing page com posicionamento claro vs. Jungle Scout e Helium 10
+- [ ] Estratégia de aquisição: comunidades de dropshipping no Reddit, YouTube, TikTok
+- [ ] Programa de afiliados para escalar sem anúncio pago
+
+---
+
+## 📋 CHECKLIST DE CONTAS E ACESSOS NECESSÁRIOS
+
+### Para começar (Fase 1):
+- [ ] **Amazon Seller Account** (Individual para começar, Professional quando escalar)
+- [ ] **AliExpress Affiliate Account** (para acesso à API oficial)
+- [ ] **Keepa** ou **Rainforest API** (pesquisa de preços Amazon)
+- [ ] Conta bancária / PayPal para receber pagamentos da Amazon
+- [ ] Endereço americano (prep center ou serviço de endereço virtual nos EUA)
+
+### Para escalar (Fase 2):
+- [ ] **Amazon Brand Registry** (necessário para Private Label)
+- [ ] **Shopify** (Fase 2)
+- [ ] **Meta Business / TikTok Ads** (Fase 2)
+
+### Para o SaaS (Fase 3):
+- [ ] **Stripe** (pagamentos recorrentes em USD)
+- [ ] **Supabase** (banco de dados + autenticação)
+- [ ] **Vercel** (deploy do frontend)
+- [ ] **Railway ou Render** (deploy do backend Python)
+- [ ] Domínio próprio para o produto
+
+---
+
+## ⚠️ RISCOS CONHECIDOS E MITIGAÇÕES
+
+| Risco | Impacto | Fase | Mitigação |
+|-------|---------|------|-----------|
+| Suspensão de conta Amazon | Alto | 1 e 2 | Seguir políticas à risca, começar com volume baixo |
+| Margem comprimida por concorrência | Médio | 1 | Motor de score monitorando concorrentes continuamente |
+| Fornecedor sem estoque após pedido | Alto | 1 | Agente de fulfillment com fallback e alerta imediato |
+| Produto bloqueado por regulação | Médio | 1 | Evitar categorias sensíveis (cosméticos, eletrônicos) |
+| Prazo de entrega longo (China → EUA) | Alto | 1 | Priorizar fornecedores com armazém nos EUA no AliExpress |
+| Concorrente copiar o produto da marca | Médio | 2 | Registrar marca (trademark) nos EUA via USPTO |
+| Churn alto no SaaS por falta de diferencial | Alto | 3 | Módulo 1B é o diferencial — proteger e evoluir continuamente |
+| Bloqueio de API (TikTok, Reddit) | Médio | 3 | Múltiplas fontes de sinal — nunca depender de uma só |
+| App construído sem uso real → features erradas | Alto | 3 | Mitigado pelo dogfooding — você usa antes de vender |
+
+---
+
+## 🚀 ORDEM DE EXECUÇÃO RECOMENDADA
+
+**— PRÉ-FASE: Infraestrutura do App (base de tudo) —**
+```
+1. Criar conta Amazon Seller
+2. Construir o app web base — já como SaaS desde o início:
+   - Frontend web (React + Tailwind)
+   - Backend (FastAPI)
+   - Autenticação (Supabase)
+   - Deploy (Vercel + Railway)
+   → Você é o primeiro e único usuário nessa etapa
+```
+
+**— FASE 1: Gerar Caixa (usando o app) —**
+```
+3.  Construir Módulo 1A dentro do app (Motor de Descoberta — produtos consolidados)
+4.  Construir Módulo 1B dentro do app (Tendências Emergentes)
+5.  Usar o app para descobrir produtos reais e publicar na Amazon manualmente
+6.  Validar: os produtos que o app recomenda realmente vendem?
+7.  Refinar o score e sinais com base nos resultados reais
+8.  Construir Módulo 2 dentro do app (Publicador de Listings)
+9.  Construir Módulo 3 dentro do app (Fulfillment Automático)
+10. Construir Módulo 4 dentro do app (Atendimento ao Cliente)
+11. Construir Módulo 5 dentro do app (Dashboard de Performance)
+```
+
+**— FASE 2: Construir Marca (usando o app para pesquisa) —**
+```
+12. Usar o app para identificar produto campeão com gap de branding
+13. Criar identidade de marca e montar Shopify
+14. Produzir conteúdo e lançar com influenciadores de nicho
+```
+
+**— FASE 3: Abrir o SaaS para outros usuários —**
+```
+15. App já está pronto e validado em produção real (você mesmo usou)
+16. Adicionar Stripe (cobrança recorrente em USD)
+17. Criar planos de preço e sistema multi-tenant
+18. Lançar em comunidades de dropshipping (Reddit, YouTube, TikTok)
+19. Programa de afiliados para crescimento orgânico
+```
+
+> ⚡ **1A vs 1B:** O 1A garante receita no curto prazo com produtos validados. O 1B é a vantagem competitiva — produtos publicados antes de todo mundo.
+
+> 💰 **Fases 1+2 vs Fase 3:** O dropshipping e o private label pagam as contas. O SaaS é o ativo de longo prazo — você vira dono da pá, não apenas garimpeiro.
+
+> 🎯 **Princípio guia:** Entender o processo manual antes de automatizar. Vender 1–2 produtos na mão primeiro. A automação resolve dores reais que você viveu, não problemas imaginados.
