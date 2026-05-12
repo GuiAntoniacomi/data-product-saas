@@ -105,18 +105,10 @@ export function ProductTable({ products }: { products: Product[] }) {
       </div>
 
       {/* Aviso dados reais */}
-      {products.some(p => p.search_keyword === 'demo') && (
-        <div className="flex items-center gap-2 rounded-md border border-yellow-700/50 bg-yellow-900/20 px-4 py-2.5 text-sm text-yellow-400">
-          <AlertCircle size={14} />
-          <span>Dados de demonstração — execute o scraper para substituir por produtos reais do AliExpress.</span>
-        </div>
-      )}
-      {!products.some(p => p.search_keyword === 'demo') && (
-        <div className="flex items-center gap-2 rounded-md border border-zinc-700/50 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-400">
-          <AlertCircle size={14} />
-          <span>Preços Amazon são estimativas baseadas em múltiplos por categoria. Execute o scraper para atualizar.</span>
-        </div>
-      )}
+      <div className="flex items-center gap-2 rounded-md border border-zinc-700/50 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-400">
+        <AlertCircle size={14} />
+        <span>Produtos do Amazon Movers &amp; Shakers — custo estimado via multiplicador por categoria. Atualizado diariamente às 8h.</span>
+      </div>
 
       {/* Tabela */}
       <div className="rounded-lg border border-zinc-800 overflow-hidden">
