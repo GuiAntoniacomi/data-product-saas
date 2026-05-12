@@ -6,7 +6,7 @@
 
 ## 🟢 Status Atual — Maio 2026
 
-### O que foi construído (Semana 0)
+### O que foi construído (Semana 0 + início Semana 1)
 
 | Item | Status | Detalhe |
 |------|--------|---------|
@@ -15,38 +15,30 @@
 | Banco de dados (Supabase) | ✅ Feito | `ts_product_cache` + `ts_scraper_jobs` |
 | Deploy (Vercel) | ✅ Feito | Projeto "Vantis" — `ivuqqezhzhcjwzcakcmm` |
 | Repositório GitHub | ✅ Feito | `GuiAntoniacomi/data-product-saas` |
-| Scraper AliExpress (Playwright) | ✅ Feito | 5 categorias, filtros de qualidade |
+| ~~Scraper AliExpress~~ → Scraper Amazon M&S | ✅ Feito | 5 categorias, ~94 produtos/run, scores 70–84 |
 | Score de oportunidade | ✅ Feito | Margem 40% + Pedidos 30% + Reviews 20% + Rating 10% |
-| Estimativa de preço Amazon | ✅ Feito | Multiplicador por categoria (3.4×–4.2×) — sem Keepa |
+| Preço Amazon real (sem estimativa) | ✅ Feito | Coletado direto da página M&S — sem Keepa |
 | Botão "Executar Scraper" no app | ✅ Feito | Job assíncrono com polling de status |
 | GitHub Actions cron diário | ✅ Feito | 8h Brasília (11:00 UTC) |
 | Dashboard de produtos com filtros | ✅ Feito | Busca, categoria, margem mínima |
-| Dependências instaladas | ✅ Feito | Playwright Chromium + httpx + beautifulsoup4 |
 
 ### Pendente para validar Módulo 1A
 - [ ] Adicionar `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` nos GitHub Secrets
-- [ ] Implementar scraper Amazon Movers & Shakers (ver decisão abaixo)
-- [ ] Avaliar qualidade dos produtos encontrados vs. critérios reais de negócio
+- [ ] Avaliar qualidade dos produtos encontrados vs. critérios reais de negócio (deixar rodar 2–3 dias)
 
 ### Decisão de arquitetura — Fonte de dados do Módulo 1A
 
-**Problema:** O AliExpress bloqueia 100% das tentativas de scraping (headless Playwright, httpx, mobile endpoint) via sistema anti-bot Baxia. Nenhuma abordagem sem autenticação funciona a partir de IP residencial brasileiro.
+**Problema:** O AliExpress bloqueia 100% das tentativas de scraping (headless Playwright, httpx, mobile endpoint) via sistema anti-bot Baxia.
 
-**Decisão tomada:** Trocar a fonte para **Amazon Movers & Shakers** (Opção B).
+**Decisão implementada:** `amazon_movers_scraper.py` — **Amazon Movers & Shakers**.
 
-**Por que funciona melhor:**
-- Páginas públicas da Amazon (`amazon.com/gp/movers-and-shakers/<categoria>/`) são acessíveis sem autenticação
-- Dá **preços Amazon reais** em vez de estimativas por multiplicador
-- Mostra produtos com demanda comprovada e em crescimento
-- Lógica invertida: `preço_aliexpress_estimado = amazon_price / multiplicador_categoria`
+**Como funciona:**
+- Páginas públicas da Amazon (`amazon.com/gp/movers-and-shakers/<categoria>/`) acessíveis sem auth
+- Lógica invertida: `supplier_price = amazon_price / multiplier_categoria`
+- `monthly_orders` proxy = `rank_change_pct × 10` (ex: produto que subiu 300% no BSR → 3000)
+- 5 categorias: kitchen / pet-supplies / sporting-goods / lawn-garden / hi (Tools)
 
-**O que muda no scraper:**
-- `aliexpress_scraper.py` → substituir por `amazon_movers_scraper.py`
-- Campos `aliexpress_price` passam a ser estimativas (ao invés de `estimated_amazon_price`)
-- URL do produto aponta para Amazon em vez de AliExpress
-- O usuário busca o fornecedor no AliExpress manualmente a partir do produto identificado
-
-**Alternativa futura (Opção A):** AliExpress Affiliate API — cadastro gratuito em portals.aliexpress.com — pode ser implementada depois para cruzar dados de fornecedor com os produtos identificados via Amazon.
+**Alternativa futura:** AliExpress Affiliate API (portals.aliexpress.com) — para cruzar fornecedor com os produtos identificados via Amazon.
 
 ---
 
@@ -185,7 +177,8 @@ Scanner de oportunidades (nosso Módulo 1A adaptado)
 - [x] Filtro configurável no dashboard: margem mínima, categoria, busca por nome
 - [x] Score de oportunidade: `margem×40% + pedidos×30% + reviews×20% + rating×10%`
 - [x] Dashboard web com tabela de produtos ordenada por score
-- [ ] Validação real: confirmar que os produtos encontrados têm demanda real na Amazon
+- [x] Implementar scraper Amazon Movers & Shakers (`amazon_movers_scraper.py`) — substituiu AliExpress
+- [ ] Validação real: confirmar que os produtos encontrados têm demanda real na Amazon (rodar 2–3 dias com Secrets configurados)
 
 **Para FBA Arbitrage (fornecedores americanos):**
 - [ ] Scanner de preços em lojas americanas (Walmart, Target, liquidadores online)
@@ -457,8 +450,10 @@ Configuração manual           →   Onboarding guiado
 **— FASE 1A: Escola — Dropshipping AliExpress (Mês 1–3) —**
 > Objetivo: aprender o processo e validar o app. Não é para enricar — é para errar barato.
 ```
-3.  🔄 Construir Módulo 1A no app (Motor de Descoberta AliExpress)
-    ✅ Scraper AliExpress, score, dashboard — pendente: validação com dados reais
+3.  🔄 Construir Módulo 1A no app (Motor de Descoberta — Amazon M&S)
+    ✅ Scraper Amazon M&S, score, dashboard
+    ✅ Decisão de fonte: Amazon M&S em vez de AliExpress (bloqueado por Baxia)
+    ⏳ Pendente: configurar GitHub Secrets → deixar rodar 2–3 dias → avaliar qualidade
 4.  Construir Módulo 1B no app (Tendências Emergentes)
 5.  Usar o app para descobrir produtos e publicar na Amazon manualmente
 6.  Validar: os produtos que o app recomenda realmente vendem?
