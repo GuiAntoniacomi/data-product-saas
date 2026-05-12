@@ -29,6 +29,12 @@ CATEGORIES = [
         "keyword": "amazon_movers_ferramentas",
         "amazon_multiplier": 3.4,
     },
+    {
+        "name": "Moda Masculina",
+        "url": "https://www.amazon.com/gp/movers-and-shakers/fashion/",
+        "keyword": "amazon_movers_moda_masculina",
+        "amazon_multiplier": 3.6,
+    },
 ]
 
 # Taxa Amazon (~15% referral + estimativa FBA)
