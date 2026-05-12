@@ -9,7 +9,7 @@ export default async function ProductsPage() {
     .from('ts_product_cache')
     .select('*')
     .order('score', { ascending: false })
-    .limit(100)
+    .limit(200)
 
   return (
     <div className="p-8 space-y-6">

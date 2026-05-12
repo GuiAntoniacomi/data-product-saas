@@ -47,10 +47,13 @@ function MarginBadge({ pct }: { pct: number }) {
   )
 }
 
+const PAGE_SIZE = 25
+
 export function ProductTable({ products }: { products: Product[] }) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('Todos')
   const [minMargin, setMinMargin] = useState(25)
+  const [page, setPage] = useState(1)
 
   const filtered = products.filter(p => {
     const matchQuery = p.name.toLowerCase().includes(query.toLowerCase())
@@ -58,6 +61,10 @@ export function ProductTable({ products }: { products: Product[] }) {
     const matchMargin = p.margin_pct >= minMargin
     return matchQuery && matchCategory && matchMargin
   })
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   if (products.length === 0) {
     return (
@@ -79,14 +86,14 @@ export function ProductTable({ products }: { products: Product[] }) {
           <input
             type="text"
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => { setQuery(e.target.value); setPage(1) }}
             placeholder="Buscar produto..."
             className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-violet-500 focus:outline-none"
           />
         </div>
         <select
           value={category}
-          onChange={e => setCategory(e.target.value)}
+          onChange={e => { setCategory(e.target.value); setPage(1) }}
           className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
         >
           {CATEGORIES.map(c => <option key={c}>{c}</option>)}
@@ -96,7 +103,7 @@ export function ProductTable({ products }: { products: Product[] }) {
           <input
             type="number"
             value={minMargin}
-            onChange={e => setMinMargin(Number(e.target.value))}
+            onChange={e => { setMinMargin(Number(e.target.value)); setPage(1) }}
             min={0} max={100}
             className="w-16 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
           />
@@ -124,14 +131,14 @@ export function ProductTable({ products }: { products: Product[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800">
-            {filtered.length === 0 ? (
+            {paginated.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-12 text-zinc-500">
                   Nenhum produto com esses filtros.
                 </td>
               </tr>
             ) : (
-              filtered.map(product => (
+              paginated.map(product => (
                 <tr key={product.id} className="bg-zinc-900/50 hover:bg-zinc-800/60 transition-colors">
                   <td className="px-4 py-3">
                     <div>
@@ -178,9 +185,43 @@ export function ProductTable({ products }: { products: Product[] }) {
         </table>
       </div>
 
-      <p className="text-xs text-zinc-600">
-        {filtered.length} produto{filtered.length !== 1 ? 's' : ''} · ordenados por score
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-zinc-600">
+          {filtered.length} produto{filtered.length !== 1 ? 's' : ''} · página {currentPage} de {totalPages}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded text-xs text-zinc-400 border border-zinc-700 hover:border-zinc-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Anterior
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+              <button
+                key={n}
+                onClick={() => setPage(n)}
+                className={clsx(
+                  'w-8 h-8 rounded text-xs font-medium transition-colors',
+                  n === currentPage
+                    ? 'bg-violet-600 text-white'
+                    : 'text-zinc-400 border border-zinc-700 hover:border-zinc-500 hover:text-white'
+                )}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded text-xs text-zinc-400 border border-zinc-700 hover:border-zinc-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              Próxima →
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
