@@ -12,8 +12,8 @@ import argparse
 import sys
 from datetime import datetime, timezone
 
-from aliexpress_config import CATEGORIES
-from aliexpress_scraper import scrape_keywords
+from amazon_movers_config import CATEGORIES
+from amazon_movers_scraper import scrape_keywords
 from db import update_job, save_products
 
 

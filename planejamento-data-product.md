@@ -1,6 +1,6 @@
 # 🛒 Plano de Negócio — Dropshipping → Private Label → SaaS
 > Documento de planejamento e checklist gerado a partir do brainstorming inicial.
-> Última atualização: Maio 2026 — v5 (Semana 0 concluída — app base + Módulo 1A em desenvolvimento)
+> Última atualização: Maio 2026 — v6 (Estratégia de progressão Dropshipping → FBA definida)
 
 ---
 
@@ -56,42 +56,127 @@ O plano está dividido em **três fases sequenciais**:
 
 | Fase | Modelo | Objetivo | Canal |
 |------|--------|----------|-------|
-| **Fase 1** | Dropshipping (produto genérico da China) | Gerar caixa + validar as ferramentas | Amazon |
+| **Fase 1A** | Dropshipping AliExpress (China) | Entrada com capital mínimo | Amazon |
+| **Fase 1B** | FBA Arbitrage (fornecedores americanos) | Margem maior + entrega Prime | Amazon FBA |
 | **Fase 2** | Private Label (marca própria com branding) | Construir ativo de marca escalável | Shopify + Instagram/TikTok |
 | **Fase 3** | SaaS (vender as ferramentas que construímos) | Receita recorrente de alta margem | App Web B2B para vendedores |
 
 > 💡 **A lógica do ecossistema:** A Fase 1 é a pesquisa de mercado paga para a Fase 2. As ferramentas que você usa na Fase 1 e 2 se tornam o produto da Fase 3. Cada fase financia e valida a próxima.
 
+> 🎓 **Dropshipping é a escola. FBA é o negócio.** Os primeiros 60–90 dias com AliExpress existem para aprender o processo e testar o app com risco mínimo — não para enricar. Quando o app estiver confiável e o primeiro caixa gerado, migrar para FBA onde a margem e a sustentabilidade são reais.
+
 > 🐾 **Princípio Dogfooding:** O SaaS será construído para uso próprio desde o primeiro dia — não como scripts locais que depois viram produto, mas já como app web real. Você usa a ferramenta para rodar o dropshipping, valida a estratégia de negócio e valida o produto simultaneamente, com o mesmo esforço.
 
 ---
 
-## 📦 FASE 1 — Dropshipping na Amazon
+## 📦 FASE 1 — Vender na Amazon (Dois Modelos Paralelos)
 
-### Conceito
+### Modelo 1A — Dropshipping AliExpress (China)
 - Produto genérico chinês comprado no AliExpress
 - Vendido na Amazon sem estoque físico
 - Quando o pedido entra → compra automática no AliExpress no endereço do cliente
+- **Capital inicial:** $50–200
+- **Prazo de entrega:** 2–4 semanas (ponto fraco)
+- **Margem típica:** 10–30%
 
-### Pipeline completo
 ```
 AliExpress (fornecedor)
-    → Motor de descoberta de produtos (scraping/API)
-        → Score de viabilidade (margem, ranking, reviews)
-            → Listing na Amazon (via SP-API)
-                → Pedido do cliente
-                    → Compra automática no AliExpress
-                        → Entrega ao cliente
+    → Motor de descoberta (Módulo 1A + 1B)
+        → Listing na Amazon
+            → Pedido do cliente
+                → Compra automática no AliExpress
+                    → Entrega direta ao cliente (sem estoque)
 ```
+
+---
+
+### Modelo 1B — FBA Arbitrage (Fornecedores Americanos)
+Comprar produtos em liquidação/atacado nos EUA, mandar para um **Prep Center** que etiqueta e prepara, e deixar a Amazon entregar via Prime (1–2 dias).
+
+Três variantes dentro desse modelo:
+
+| Variante | Como funciona | Escalabilidade |
+|---|---|---|
+| **Retail Arbitrage** | Compra promoções em Walmart/Target/Costco fisicamente | Baixa — depende de você caçando oferta |
+| **Online Arbitrage** | Mesma lógica mas em lojas online, automatizável | Média — dá para escanear com software |
+| **Wholesale** | Compra direto do distribuidor/fabricante em volume | Alta — modelo mais sustentável |
+
+**Pipeline FBA:**
+```
+Scanner de oportunidades (nosso Módulo 1A adaptado)
+    → Fornecedor americano (Walmart, liquidadores, distribuidores)
+        → Prep Center (embala + etiqueta no padrão Amazon FBA) ← $1–3/unidade
+            → Amazon FBA (armazém da Amazon)
+                → Cliente compra
+                    → Amazon entrega (Prime 1–2 dias) ← vantagem enorme
+```
+
+**Exemplo real (visto em vídeo):**
+| Dado | Valor |
+|---|---|
+| Produto | Camisa polo Callaway (liquidação) |
+| BSR | 23k — top 1% da categoria |
+| Vendas estimadas | $568/mês |
+| Custo de compra | $9,00 |
+| Preço de venda Amazon | $32,90 |
+| Lucro líquido/unidade | $9,99 |
+| Margem | 30% |
+| ROI | 111% |
+
+---
+
+### Comparativo dos dois modelos:
+
+| | Dropshipping AliExpress | FBA Arbitrage (EUA) |
+|---|---|---|
+| Capital inicial | $50–200 | $300–1.000 |
+| Prazo de entrega | 2–4 semanas | 1–2 dias (Prime) |
+| Margem típica | 10–30% | 20–50% |
+| Controle de qualidade | Baixo | Alto |
+| Risco de suspensão Amazon | Alto | Baixo |
+| Automação possível | Alta | Média |
+| Melhor para começar | ✅ Capital mínimo | ✅ Margem e credibilidade |
+
+> 🗺️ **Estratégia de progressão definida:**
+> - **Mês 1–3:** Dropshipping AliExpress — aprender o processo, testar o app, errar barato. Meta: primeiros $200–500 em vendas.
+> - **Mês 3–6:** Migrar para FBA Arbitrage com o caixa gerado — margem real, entrega Prime, negócio sustentável.
+> - **Mês 6+:** Escalar FBA + iniciar Private Label com produtos validados pelo app.
+
+---
+
+### 💰 Custos reais de entrada (sem enganação):
+
+**Modelo 1A — Dropshipping AliExpress:**
+| Item | Custo |
+|---|---|
+| Amazon Seller Account (Individual) | Gratuito até 40 vendas/mês |
+| Amazon Seller Account (Professional) | $39,99/mês |
+| Primeiro lote de testes (5–10 produtos) | $50–150 |
+| Ferramentas de pesquisa (Keepa básico) | $19/mês |
+| **Total para começar** | **~$100–250** |
+
+**Modelo 1B — FBA Arbitrage:**
+| Item | Custo |
+|---|---|
+| Amazon Seller Account Professional | $39,99/mês |
+| Prep Center (por unidade enviada) | $1–3/unidade |
+| Frete fornecedor → Prep Center | $5–15/envio |
+| Taxa FBA da Amazon | $3–6/unidade |
+| Endereço virtual nos EUA (se necessário) | $10–30/mês |
+| Estoque inicial (20–50 unidades) | $200–500 |
+| **Total para começar com seriedade** | **~$400–800** |
+
+> ⚠️ **Sobre o "R$100 para começar":** É marketing de curso. Cobre talvez a primeira compra, mas não as taxas fixas, prep center e margem de segurança. Entre com expectativa real para não desistir no primeiro mês.
 
 ---
 
 ## 🛠️ FERRAMENTAS A CONSTRUIR
 
 ### 🔍 Módulo 1A — Motor de Descoberta de Produtos (Mercado Atual)
-**Objetivo:** Identificar automaticamente produtos com boa margem e demanda real já consolidada.
+**Objetivo:** Identificar automaticamente produtos com boa margem e demanda real já consolidada. Funciona para **ambos os modelos** — AliExpress (dropshipping) e arbitrage doméstico (FBA).
 
 #### Checklist de funcionalidades:
+**Para Dropshipping AliExpress:**
 - [x] ~~Conexão com AliExpress Affiliate API~~ → **Scraper Playwright** (sem API paga)
 - [x] Scraper de produtos mais vendidos por categoria (5 categorias: Casa, Pets, Fitness, Jardim, Ferramentas)
 - [x] Coleta de: preço do fornecedor, reviews, volume de vendas, rating
@@ -101,6 +186,13 @@ AliExpress (fornecedor)
 - [x] Score de oportunidade: `margem×40% + pedidos×30% + reviews×20% + rating×10%`
 - [x] Dashboard web com tabela de produtos ordenada por score
 - [ ] Validação real: confirmar que os produtos encontrados têm demanda real na Amazon
+
+**Para FBA Arbitrage (fornecedores americanos):**
+- [ ] Scanner de preços em lojas americanas (Walmart, Target, liquidadores online)
+- [ ] Comparação automática: preço da loja × preço Amazon atual
+- [ ] Cálculo de margem FBA: custo compra + prep center ($2) + taxa FBA + margem Amazon
+- [ ] Exibir: BSR, vendas estimadas/mês, número de vendedores FBA concorrentes, ROI
+- [ ] Inspiração: replicar o painel do Seller Amp (BSR, Est. Sales, Cost Price, Sale Price, Profit%, ROI)
 
 ---
 
@@ -305,12 +397,18 @@ Configuração manual           →   Onboarding guiado
 
 ## 📋 CHECKLIST DE CONTAS E ACESSOS NECESSÁRIOS
 
-### Para começar (Fase 1):
-- [ ] **Amazon Seller Account** (Individual para começar, Professional quando escalar)
+### Para começar — Modelo 1A (Dropshipping AliExpress):
+- [ ] **Amazon Seller Account** (Individual gratuito para começar)
 - [ ] **AliExpress Affiliate Account** (para acesso à API oficial)
 - [ ] **Keepa** ou **Rainforest API** (pesquisa de preços Amazon)
-- [ ] Conta bancária / PayPal para receber pagamentos da Amazon
-- [ ] Endereço americano (prep center ou serviço de endereço virtual nos EUA)
+- [ ] Conta bancária / Payoneer para receber pagamentos da Amazon em USD
+
+### Para começar — Modelo 1B (FBA Arbitrage):
+- [ ] **Amazon Seller Account Professional** ($39,99/mês)
+- [ ] Conta em um **Prep Center americano** (ShipBob, Prep It Pack It Ship It, etc.)
+- [ ] **Endereço virtual nos EUA** se necessário (Earth Class Mail, Anytime Mailbox)
+- [ ] **Payoneer ou Wise** para receber em USD e pagar fornecedores americanos
+- [ ] Acesso a liquidadores online: **BULQ, Direct Liquidation, Amazon Liquidations**
 
 ### Para escalar (Fase 2):
 - [ ] **Amazon Brand Registry** (necessário para Private Label)
@@ -346,7 +444,7 @@ Configuração manual           →   Onboarding guiado
 
 **— PRÉ-FASE: Infraestrutura do App (base de tudo) —**
 ```
-1. Criar conta Amazon Seller
+1. Criar conta Amazon Seller (Individual — gratuito)
 2. ✅ Construir o app web base — já como SaaS desde o início:
    - ✅ Frontend web (Next.js 16 + Tailwind)
    - ✅ Backend (API Routes no Next.js — sem FastAPI separado)
@@ -356,38 +454,52 @@ Configuração manual           →   Onboarding guiado
    → Você é o primeiro e único usuário nessa etapa
 ```
 
-**— FASE 1: Gerar Caixa (usando o app) —**
+**— FASE 1A: Escola — Dropshipping AliExpress (Mês 1–3) —**
+> Objetivo: aprender o processo e validar o app. Não é para enricar — é para errar barato.
 ```
-3.  🔄 Construir Módulo 1A dentro do app (Motor de Descoberta — produtos consolidados)
+3.  🔄 Construir Módulo 1A no app (Motor de Descoberta AliExpress)
     ✅ Scraper AliExpress, score, dashboard — pendente: validação com dados reais
-4.  Construir Módulo 1B dentro do app (Tendências Emergentes)
-5.  Usar o app para descobrir produtos reais e publicar na Amazon manualmente
+4.  Construir Módulo 1B no app (Tendências Emergentes)
+5.  Usar o app para descobrir produtos e publicar na Amazon manualmente
 6.  Validar: os produtos que o app recomenda realmente vendem?
-7.  Refinar o score e sinais com base nos resultados reais
-8.  Construir Módulo 2 dentro do app (Publicador de Listings)
-9.  Construir Módulo 3 dentro do app (Fulfillment Automático)
-10. Construir Módulo 4 dentro do app (Atendimento ao Cliente)
-11. Construir Módulo 5 dentro do app (Dashboard de Performance)
+7.  Refinar score e sinais com base nos resultados reais
+8.  Construir Módulo 3 no app (Fulfillment Automático AliExpress)
+9.  Construir Módulo 4 no app (Atendimento ao Cliente com LLM)
+    → Meta: primeiros $200–500 em vendas, app funcionando e confiável
 ```
 
-**— FASE 2: Construir Marca (usando o app para pesquisa) —**
+**— FASE 1B: Negócio — FBA Arbitrage (Mês 3–6) —**
+> Objetivo: migrar para o modelo sustentável com o caixa e conhecimento da Fase 1A.
 ```
-12. Usar o app para identificar produto campeão com gap de branding
-13. Criar identidade de marca e montar Shopify
-14. Produzir conteúdo e lançar com influenciadores de nicho
+10. Abrir conta Amazon Seller Professional ($39,99/mês)
+11. Contratar Prep Center americano
+12. Adaptar Módulo 1A para escanear fornecedores americanos (BSR, ROI, FBA fees)
+13. Primeiras compras de arbitrage — Online Arbitrage para escalar
+14. Construir Módulo 2 no app (Publicador de Listings — agora com dados FBA)
+15. Construir Módulo 5 no app (Dashboard — margem FBA, BSR, giro de estoque)
+    → Meta: primeiros $1.000–3.000/mês em vendas FBA
+```
+
+**— FASE 2: Construir Marca — Private Label (Mês 6+) —**
+```
+16. Usar o app para identificar produto campeão com gap de branding
+17. Criar identidade de marca e montar Shopify
+18. Produzir conteúdo e lançar com influenciadores de nicho
 ```
 
 **— FASE 3: Abrir o SaaS para outros usuários —**
 ```
-15. App já está pronto e validado em produção real (você mesmo usou)
-16. Adicionar Stripe (cobrança recorrente em USD)
-17. Criar planos de preço e sistema multi-tenant
-18. Lançar em comunidades de dropshipping (Reddit, YouTube, TikTok)
-19. Programa de afiliados para crescimento orgânico
+19. App validado em produção real por você durante meses
+20. Adicionar Stripe (cobrança recorrente em USD)
+21. Criar planos de preço e sistema multi-tenant
+22. Lançar em comunidades de dropshipping (Reddit, YouTube, TikTok)
+23. Programa de afiliados para crescimento orgânico
 ```
 
-> ⚡ **1A vs 1B:** O 1A garante receita no curto prazo com produtos validados. O 1B é a vantagem competitiva — produtos publicados antes de todo mundo.
+> ⚡ **Módulo 1A vs 1B:** O 1A (produtos consolidados) garante resultado imediato. O 1B (tendências emergentes) é a vantagem competitiva — você publica antes da concorrência.
 
-> 💰 **Fases 1+2 vs Fase 3:** O dropshipping e o private label pagam as contas. O SaaS é o ativo de longo prazo — você vira dono da pá, não apenas garimpeiro.
+> 💰 **Dropshipping vs FBA:** Dropshipping é a escola — capital mínimo, aprendizado máximo. FBA é o negócio — margem real, entrega Prime, sustentável. Um financia e prepara o outro.
+
+> 🏆 **O ativo final é o SaaS:** O dropshipping e o private label pagam as contas. O SaaS é o ativo de longo prazo — você vira dono da pá, não apenas garimpeiro.
 
 > 🎯 **Princípio guia:** Entender o processo manual antes de automatizar. Vender 1–2 produtos na mão primeiro. A automação resolve dores reais que você viveu, não problemas imaginados.

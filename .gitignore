@@ -19,6 +19,9 @@ env/
 *.csv
 !templates/planilha_sinais_dor.csv
 
+# Arquivos de debug do scraper
+scraper/debug_*.html
+
 # Sistema
 .DS_Store
 Thumbs.db
