@@ -1,14 +1,29 @@
-export default function TrendsPage() {
+import { createClient } from '@/lib/supabase/server'
+import { TrendTable } from './_components/trend-table'
+import { TrendsButton } from '@/components/dashboard/trends-button'
+
+export default async function TrendsPage() {
+  const supabase = await createClient()
+
+  const { data: signals } = await supabase
+    .from('ts_trend_signals')
+    .select('*')
+    .order('opportunity_score', { ascending: false })
+    .limit(200)
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-white">Tendências Emergentes</h1>
-      <p className="mt-1 text-sm text-zinc-400">Módulo 1B — em desenvolvimento</p>
-      <div className="mt-8 rounded-lg border border-dashed border-zinc-700 p-12 text-center">
-        <p className="text-zinc-500 text-sm">
-          TikTok · Reddit · Google Trends · Pinterest · Amazon Movers & Shakers
-        </p>
-        <p className="text-zinc-600 text-xs mt-2">Será construído após validação do Módulo 1A</p>
+    <div className="p-8 space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Tendências Emergentes</h1>
+          <p className="mt-1 text-sm text-zinc-400">
+            Módulo 1B — oportunidades detectadas via Reddit e Google Trends, analisadas por LLM
+          </p>
+        </div>
+        <TrendsButton />
       </div>
+
+      <TrendTable signals={signals ?? []} />
     </div>
   )
 }

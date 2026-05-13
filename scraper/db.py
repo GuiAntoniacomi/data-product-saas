@@ -1,5 +1,6 @@
 import os
 import httpx
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -51,4 +52,23 @@ def save_products(products: list[dict]):
         f"{_base_url}/ts_product_cache",
         headers={**_headers, "Prefer": "return=minimal"},
         json=products,
+    ).raise_for_status()
+
+
+def save_trends(trends: list[dict]):
+    if not trends:
+        return
+    _init()
+    try:
+        httpx.delete(
+            f"{_base_url}/ts_trend_signals",
+            headers=_headers,
+            params={"source": "in.(reddit,google_trends)"},
+        ).raise_for_status()
+    except Exception as e:
+        print(f"  Aviso: limpeza de trends falhou ({e}), inserindo mesmo assim")
+    httpx.post(
+        f"{_base_url}/ts_trend_signals",
+        headers={**_headers, "Prefer": "return=minimal"},
+        json=trends,
     ).raise_for_status()
