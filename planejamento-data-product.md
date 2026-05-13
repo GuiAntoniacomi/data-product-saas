@@ -1,30 +1,37 @@
 # 🛒 Plano de Negócio — Dropshipping → Private Label → SaaS
 > Documento de planejamento e checklist gerado a partir do brainstorming inicial.
-> Última atualização: Maio 2026 — v6 (Estratégia de progressão Dropshipping → FBA definida)
+> Última atualização: Maio 2026 — v7 (Módulos 1A e 1B concluídos e em produção)
 
 ---
 
 ## 🟢 Status Atual — Maio 2026
 
-### O que foi construído (Semana 0 + início Semana 1)
+### O que foi construído — Módulos 1A e 1B completos
 
 | Item | Status | Detalhe |
 |------|--------|---------|
 | App web base (Next.js 16) | ✅ Feito | Full-stack, App Router, TypeScript |
 | Autenticação (Supabase Auth) | ✅ Feito | Login/cadastro, proteção de rotas |
-| Banco de dados (Supabase) | ✅ Feito | `ts_product_cache` + `ts_scraper_jobs` |
+| Banco de dados (Supabase) | ✅ Feito | `ts_product_cache` + `ts_scraper_jobs` + `ts_trend_signals` |
 | Deploy (Vercel) | ✅ Feito | Projeto "Vantis" — `ivuqqezhzhcjwzcakcmm` |
 | Repositório GitHub | ✅ Feito | `GuiAntoniacomi/data-product-saas` |
-| ~~Scraper AliExpress~~ → Scraper Amazon M&S | ✅ Feito | 5 categorias, ~94 produtos/run, scores 70–84 |
-| Score de oportunidade | ✅ Feito | Margem 40% + Pedidos 30% + Reviews 20% + Rating 10% |
-| Preço Amazon real (sem estimativa) | ✅ Feito | Coletado direto da página M&S — sem Keepa |
+| Scraper Amazon M&S (Módulo 1A) | ✅ Feito | 6 categorias, ~115 produtos/run, scores 66–85 |
+| Score de oportunidade (1A) | ✅ Feito | Margem 40% + Pedidos 30% + Reviews 20% + Rating 10% |
+| Dashboard de produtos com filtros | ✅ Feito | Busca, categoria, margem mínima, paginação 25/pág |
 | Botão "Executar Scraper" no app | ✅ Feito | Job assíncrono com polling de status |
-| GitHub Actions cron diário | ✅ Feito | 8h Brasília (11:00 UTC) |
-| Dashboard de produtos com filtros | ✅ Feito | Busca, categoria, margem mínima |
+| GitHub Actions cron Módulo 1A | ✅ Feito | 8h Brasília — `scrape-daily.yml` |
+| GitHub Secrets configurados | ✅ Feito | SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY |
+| **Módulo 1B — Reddit scraper** | ✅ Feito | API JSON pública (sem credenciais), 6 subreddits, ~65 posts/run |
+| **Módulo 1B — Google Trends** | ✅ Feito | pytrends, 4 keywords, rising queries por categoria |
+| **Módulo 1B — LLM (Claude Haiku)** | ✅ Feito | Extrai ~15 oportunidades de produto por run |
+| **Dashboard /trends** | ✅ Feito | Tabela filtrável: fonte, categoria, score, lead time, link |
+| **GitHub Actions cron Módulo 1B** | ✅ Feito | 9h Brasília — `trends-daily.yml` |
 
-### Pendente para validar Módulo 1A
-- [ ] Adicionar `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` nos GitHub Secrets
-- [ ] Avaliar qualidade dos produtos encontrados vs. critérios reais de negócio (deixar rodar 2–3 dias)
+### Próximo passo — Validação de negócio (não é código)
+- [ ] Abrir conta Amazon Seller (Individual, gratuita para começar)
+- [ ] Escolher 2–3 produtos do dashboard e publicar listings manualmente
+- [ ] Validar: os produtos que o app recomenda realmente vendem?
+- [ ] Após primeiras vendas → construir Módulo 2 (Publicador automático via SP-API)
 
 ### Decisão de arquitetura — Fonte de dados do Módulo 1A
 
@@ -225,15 +232,15 @@ Crawlers por fonte (TikTok + Reddit + Google Trends + Pinterest + Amazon M&S)
 
 #### Checklist de funcionalidades:
 - [ ] Monitor de hashtags e produtos virais no **TikTok API** ou scraper
-- [ ] Leitor de posts e comentários relevantes no **Reddit API (PRAW)**
-- [ ] Monitor de termos no **Google Trends API (pytrends)**
+- [x] Leitor de posts de produto no **Reddit** (API JSON pública — sem credenciais)
+- [x] Monitor de termos no **Google Trends** (pytrends)
 - [ ] Monitor de **Pinterest Trends**
-- [ ] Scraper diário do **Amazon Movers & Shakers** por categoria
+- [x] Scraper diário do **Amazon Movers & Shakers** por categoria (Módulo 1A)
 - [ ] Monitor de **AliExpress New Arrivals** com crescimento de reviews
-- [ ] LLM para consolidar sinais e extrair nomes de produtos acionáveis
+- [x] LLM (Claude Haiku) para consolidar sinais e extrair nomes de produtos acionáveis
 - [ ] Cruzamento automático: sinal de tendência → busca no AliExpress → busca na Amazon
-- [ ] Score composto: `(força do sinal × antecedência) / (nº de concorrentes na Amazon)`
-- [ ] Alerta diário com top 5 oportunidades emergentes
+- [x] Score composto de oportunidade (opportunity_score + trend_strength + lead_time_days)
+- [x] Dashboard diário com oportunidades emergentes filtráveis
 - [ ] Histórico de tendências para aprendizado: quais sinais previram bem?
 
 ---
@@ -450,16 +457,23 @@ Configuração manual           →   Onboarding guiado
 **— FASE 1A: Escola — Dropshipping AliExpress (Mês 1–3) —**
 > Objetivo: aprender o processo e validar o app. Não é para enricar — é para errar barato.
 ```
-3.  🔄 Construir Módulo 1A no app (Motor de Descoberta — Amazon M&S)
-    ✅ Scraper Amazon M&S, score, dashboard
-    ✅ Decisão de fonte: Amazon M&S em vez de AliExpress (bloqueado por Baxia)
-    ⏳ Pendente: configurar GitHub Secrets → deixar rodar 2–3 dias → avaliar qualidade
-4.  Construir Módulo 1B no app (Tendências Emergentes)
-5.  Usar o app para descobrir produtos e publicar na Amazon manualmente
+3.  ✅ Construir Módulo 1A no app (Motor de Descoberta — Amazon M&S)
+    ✅ Scraper Amazon M&S, score, dashboard, paginação
+    ✅ GitHub Secrets configurados, cron rodando diariamente
+    ✅ ~115 produtos/dia, scores 66–85, avaliados como dados válidos
+
+4.  ✅ Construir Módulo 1B no app (Tendências Emergentes)
+    ✅ Reddit (API pública) + Google Trends (pytrends) + Claude Haiku LLM
+    ✅ ~15 oportunidades/dia, dashboard /trends com filtros
+    ✅ Cron 9h Brasília rodando no GitHub Actions
+
+5.  ⏳ Usar o app para descobrir produtos e publicar na Amazon manualmente
+    → Abrir conta Amazon Seller → escolher 2–3 produtos → publicar listings
 6.  Validar: os produtos que o app recomenda realmente vendem?
 7.  Refinar score e sinais com base nos resultados reais
-8.  Construir Módulo 3 no app (Fulfillment Automático AliExpress)
-9.  Construir Módulo 4 no app (Atendimento ao Cliente com LLM)
+8.  Construir Módulo 2 no app (Publicador automático via Amazon SP-API)
+9.  Construir Módulo 3 no app (Fulfillment Automático AliExpress)
+10. Construir Módulo 4 no app (Atendimento ao Cliente com LLM)
     → Meta: primeiros $200–500 em vendas, app funcionando e confiável
 ```
 
