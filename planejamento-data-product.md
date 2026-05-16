@@ -1,6 +1,6 @@
 # 🛒 Plano de Negócio — Dropshipping → Private Label → SaaS
 > Documento de planejamento e checklist gerado a partir do brainstorming inicial.
-> Última atualização: Maio 2026 — v7 (Módulos 1A e 1B concluídos e em produção)
+> Última atualização: Maio 2026 — v8 (seletor de marketplace Amazon BR / Amazon US)
 
 ---
 
@@ -27,10 +27,39 @@
 | **Dashboard /trends** | ✅ Feito | Tabela filtrável: fonte, categoria, score, lead time, link |
 | **GitHub Actions cron Módulo 1B** | ✅ Feito | 9h Brasília — `trends-daily.yml` |
 
+### Seletor de Marketplace — implementado em Mai/2026 (v8)
+
+| Item | Status | Detalhe |
+|------|--------|---------|
+| Coluna `marketplace` em `ts_product_cache` | ✅ Feito | Migration Supabase aplicada |
+| Config Amazon BR (`amazon_movers_config_br.py`) | ✅ Feito | 6 categorias BR, multiplicadores 6–7.5x (ajustado para BRL) |
+| Scraper parametrizado por marketplace | ✅ Feito | Parsing de preço BR (R$ com vírgula decimal), URLs corretas |
+| `main.py --marketplace [us\|br\|both]` | ✅ Feito | Padrão: roda US + BR em sequência |
+| Seletor Amazon BR / Amazon US no dashboard | ✅ Feito | Toggle com persistência em localStorage |
+| Moeda correta por marketplace (R$ vs $) | ✅ Feito | Colunas da tabela exibem moeda certa |
+| Categorias dinâmicas por marketplace | ✅ Feito | Dropdown atualiza conforme marketplace ativo |
+
+### Estratégia de Marketplace — Decisão Mai/2026
+
+**Por que Amazon BR primeiro:**
+- Não há taxa mensal (conta Individual: R$2/item vendido)
+- Mesmo idioma e mercado que o usuário conhece (BR)
+- Mesma plataforma Amazon — aprender o processo vale para US depois
+- Sem necessidade de conta bancária nos EUA ou Payoneer ainda
+
+**Quando migrar para Amazon US:**
+- Após primeiras vendas validadas no BR
+- Usar lucro para cobrir conta Individual US ($0,99/item — sem mensalidade)
+- Escalar para Professional US ($39,99/mês) só com >40 vendas/mês
+
+**Shopee BR:** removida dos planos — comissões 2026 muito altas (14–20% + fixo, frete grátis obrigatório, sem teto de comissão)
+
 ### Próximo passo — Validação de negócio (não é código)
-- [ ] Abrir conta Amazon Seller (Individual, gratuita para começar)
-- [ ] Escolher 2–3 produtos do dashboard e publicar listings manualmente
-- [ ] Validar: os produtos que o app recomenda realmente vendem?
+- [ ] Abrir conta Amazon Seller BR (Individual — sem mensalidade)
+- [ ] Executar scraper → conferir produtos Amazon BR no dashboard
+- [ ] Escolher 2–3 produtos do dashboard (aba Amazon BR) e publicar listings manualmente
+- [ ] Validar: os produtos que o app recomenda realmente vendem no BR?
+- [ ] Com primeiras vendas → expandir para Amazon US (Individual, $0,99/item)
 - [ ] Após primeiras vendas → construir Módulo 2 (Publicador automático via SP-API)
 
 ### Decisão de arquitetura — Fonte de dados do Módulo 1A
@@ -468,7 +497,9 @@ Configuração manual           →   Onboarding guiado
     ✅ Cron 9h Brasília rodando no GitHub Actions
 
 5.  ⏳ Usar o app para descobrir produtos e publicar na Amazon manualmente
-    → Abrir conta Amazon Seller → escolher 2–3 produtos → publicar listings
+    → Abrir conta Amazon Seller BR (Individual) → dashboard aba Amazon BR
+    → Escolher 2–3 produtos → publicar listings na Amazon BR
+    → Validado BR: expandir para Amazon US Individual ($0,99/item)
 6.  Validar: os produtos que o app recomenda realmente vendem?
 7.  Refinar score e sinais com base nos resultados reais
 8.  Construir Módulo 2 no app (Publicador automático via Amazon SP-API)

@@ -11,6 +11,7 @@ Campos de saída:
   aliexpress_url        → URL do produto na Amazon
   estimated_amazon_price → preço real da Amazon
   monthly_orders        → proxy: rank_change_pct * 10 (ex: 200% → 2000)
+  marketplace           → 'amazon_us' | 'amazon_br'
 """
 
 import asyncio
@@ -32,12 +33,23 @@ _STEALTH = """
     window.chrome = {runtime: {}};
 """
 
+_BLOCK_KEYWORDS = [
+    "captcha", "robot check", "automated access", "type the characters",
+    "verificação", "robô", "acesso automatizado",
+]
+
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
-def _price(text: str) -> float:
-    """'$19.99' ou '$1,299.00' → float."""
-    m = re.search(r"[\d]+\.?\d*", (text or "").replace(",", ""))
+def _price(text: str, is_br: bool = False) -> float:
+    text = (text or "").strip()
+    if is_br:
+        # R$ 1.299,99 → 1299.99  (period = thousands, comma = decimal in BR)
+        text = re.sub(r"[^\d.,]", "", text)
+        text = text.replace(".", "").replace(",", ".")
+    else:
+        text = text.replace(",", "")
+    m = re.search(r"[\d]+\.?\d*", text)
     try:
         return float(m.group()) if m else 0.0
     except ValueError:
@@ -61,25 +73,56 @@ def _pct(text: str) -> float:
 
 def _parse_aria_stars(label: str) -> tuple[float, int]:
     """
-    '4.5 out of 5 stars, 7,782 ratings' → (4.5, 7782)
-    '5.0 out of 5 stars, 1 ratings'     → (5.0, 1)
+    EN: '4.5 out of 5 stars, 7,782 ratings' → (4.5, 7782)
+    PT: '4,5 de 5 estrelas, 1.234 avaliações' → (4.5, 1234)
     """
     rating, reviews = 0.0, 0
-    m_r = re.search(r"([\d.]+)\s+out of 5", label or "")
+
+    # Português
+    m_r = re.search(r"([\d,]+)\s+de\s+5", label or "")
     if m_r:
         try:
-            rating = float(m_r.group(1))
+            rating = float(m_r.group(1).replace(",", "."))
         except ValueError:
             pass
-    m_n = re.search(r"([\d,]+)\s+rating", label or "")
+    m_n = re.search(r"([\d.,]+)\s+avalia", label or "")
     if m_n:
         reviews = _int(m_n.group(1))
+
+    # Inglês (fallback — Amazon BR frequentemente usa inglês no HTML)
+    if not rating:
+        m_r = re.search(r"([\d.]+)\s+out of 5", label or "")
+        if m_r:
+            try:
+                rating = float(m_r.group(1))
+            except ValueError:
+                pass
+    if not reviews:
+        m_n = re.search(r"([\d,]+)\s+rating", label or "")
+        if m_n:
+            reviews = _int(m_n.group(1))
+
     return rating, reviews
 
 
 # ── item parser ───────────────────────────────────────────────────────────────
 
-async def _parse_item(item, rank_pos: int, category: str, keyword: str, multiplier: float) -> dict | None:
+async def _parse_item(
+    item,
+    rank_pos: int,
+    category: str,
+    keyword: str,
+    multiplier: float,
+    marketplace: str,
+    fee_pct: float,
+    min_reviews: int,
+    min_margin: int,
+    max_products: int,
+    max_price: float,
+) -> dict | None:
+    is_br = marketplace == "amazon_br"
+    base_url = "https://www.amazon.com.br" if is_br else "https://www.amazon.com"
+
     # ── Título ────────────────────────────────────────────────────────────────
     title_el = await item.query_selector("[class*='p13n-sc-css-line-clamp']")
     if not title_el:
@@ -91,18 +134,19 @@ async def _parse_item(item, rank_pos: int, category: str, keyword: str, multipli
     # ── Preço real Amazon ────────────────────────────────────────────────────
     price_el = await item.query_selector("[class*='p13n-sc-price']")
     price_text = (await price_el.inner_text()).strip() if price_el else ""
-    amazon_price = _price(price_text)
-    if amazon_price <= 0 or amazon_price > 500:
+    amazon_price = _price(price_text, is_br=is_br)
+    if amazon_price <= 0 or amazon_price > max_price:
         return None
 
     # ── Rating + reviews (via aria-label do link de estrelas) ────────────────
     stars_a = await item.query_selector("a[aria-label*='stars']")
+    if not stars_a:
+        stars_a = await item.query_selector("a[aria-label*='estrelas']")
     rating, reviews_count = 0.0, 0
     if stars_a:
         label = await stars_a.get_attribute("aria-label") or ""
         rating, reviews_count = _parse_aria_stars(label)
     if rating == 0.0:
-        # fallback: texto do span.a-icon-alt
         alt_el = await item.query_selector("span.a-icon-alt")
         if alt_el:
             alt_text = await alt_el.inner_text()
@@ -113,13 +157,12 @@ async def _parse_item(item, rank_pos: int, category: str, keyword: str, multipli
                 except ValueError:
                     pass
     if rating == 0.0:
-        rating = 4.0  # fallback razoável
+        rating = 4.0
 
-    if reviews_count < MIN_REVIEWS:
+    if reviews_count < min_reviews:
         return None
 
     # ── URL do produto ────────────────────────────────────────────────────────
-    # Pega o link visível (role=link), não o aria-hidden
     url_el = await item.query_selector("a.a-link-normal[role='link']")
     if not url_el:
         url_el = await item.query_selector("a.aok-block[href*='/dp/']")
@@ -127,8 +170,8 @@ async def _parse_item(item, rank_pos: int, category: str, keyword: str, multipli
         url_el = await item.query_selector("a[href*='/dp/']")
     href = (await url_el.get_attribute("href") or "") if url_el else ""
     if href.startswith("/"):
-        href = f"https://www.amazon.com{href}"
-    href = href.split("?")[0]  # remove parâmetros de rastreamento
+        href = f"{base_url}{href}"
+    href = href.split("?")[0]
 
     # ── Imagem ────────────────────────────────────────────────────────────────
     img_el = await item.query_selector("img.a-dynamic-image")
@@ -145,67 +188,64 @@ async def _parse_item(item, rank_pos: int, category: str, keyword: str, multipli
     # ── Rank change % (o sinal central do M&S) ───────────────────────────────
     pct_el = await item.query_selector("span.zg-grid-pct-change")
     pct_text = (await pct_el.inner_text()).strip() if pct_el else ""
-    rank_change_pct = _pct(pct_text)  # e.g. 169.0
+    rank_change_pct = _pct(pct_text)
 
     # ── Custo estimado do fornecedor (lógica invertida) ───────────────────────
     supplier_price = round(amazon_price / multiplier, 2)
 
     # ── Margem ────────────────────────────────────────────────────────────────
-    amazon_fee = amazon_price * AMAZON_FEE_PCT
+    amazon_fee = amazon_price * fee_pct
     profit = amazon_price - supplier_price - amazon_fee
     margin_pct = int((profit / amazon_price) * 100) if amazon_price > 0 else 0
-    if margin_pct < MIN_MARGIN_PCT:
+    if margin_pct < min_margin:
         return None
 
-    # ── Proxy de demand ───────────────────────────────────────────────────────
-    # rank_change_pct * 10 → alinha com scoring: orders_score = min(x/50, 100)
-    # 500% rank change → 5000 → orders_score = 100 | 100% → 1000 → score = 20
-    # Fallback quando não há %, usa posição no M&S: pos 1 → 3000, pos 20 → 150
+    # ── Proxy de demanda ──────────────────────────────────────────────────────
     if rank_change_pct > 0:
         monthly_orders_proxy = int(rank_change_pct * 10)
     else:
-        monthly_orders_proxy = max(150, (MAX_PRODUCTS_PER_CATEGORY + 1 - rank_pos) * 150)
+        monthly_orders_proxy = max(150, (max_products + 1 - rank_pos) * 150)
 
     score = calculate_score(margin_pct, monthly_orders_proxy, reviews_count, rating)
 
     return {
         "name": title[:200],
-        "aliexpress_price": supplier_price,        # custo estimado do fornecedor
-        "aliexpress_url": href,                    # URL Amazon (fonte real)
+        "aliexpress_price": supplier_price,
+        "aliexpress_url": href,
         "aliexpress_img": img_url,
-        "estimated_amazon_price": amazon_price,    # preço real da Amazon
+        "estimated_amazon_price": amazon_price,
         "margin_pct": margin_pct,
-        "monthly_orders": monthly_orders_proxy,    # proxy: rank_change% × 10
+        "monthly_orders": monthly_orders_proxy,
         "reviews_count": reviews_count,
         "rating": rating,
         "score": score,
         "category": category,
         "search_keyword": keyword,
+        "marketplace": marketplace,
     }
 
 
 # ── category scraper ──────────────────────────────────────────────────────────
 
-async def _scrape_category(page, category: dict) -> list[dict]:
+async def _scrape_category(page, category: dict, config: dict, marketplace: str) -> list[dict]:
     name = category["name"]
     url = category["url"]
     multiplier = category["amazon_multiplier"]
     keyword = category["keyword"]
 
-    print(f"  [{name}] {url}")
+    print(f"  [{marketplace}][{name}] {url}")
 
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=45000)
         await page.wait_for_timeout(3000)
 
         content = await page.content()
-        if any(k in content.lower() for k in ["captcha", "robot check", "automated access", "type the characters"]):
+        if any(k in content.lower() for k in _BLOCK_KEYWORDS):
             print(f"  [{name}] Bloqueio detectado — pulando.")
             return []
 
         items = await page.query_selector_all("div.p13n-grid-content")
         if not items:
-            # fallback: busca por ID pattern
             items = await page.query_selector_all("div[id^='p13n-asin-index-']")
 
         if not items:
@@ -215,9 +255,16 @@ async def _scrape_category(page, category: dict) -> list[dict]:
         print(f"  [{name}] {len(items)} itens na página.")
 
         products = []
-        for rank_pos, item in enumerate(items[:MAX_PRODUCTS_PER_CATEGORY], start=1):
+        for rank_pos, item in enumerate(items[:config["max_products"]], start=1):
             try:
-                product = await _parse_item(item, rank_pos, name, keyword, multiplier)
+                product = await _parse_item(
+                    item, rank_pos, name, keyword, multiplier, marketplace,
+                    fee_pct=config["fee_pct"],
+                    min_reviews=config["min_reviews"],
+                    min_margin=config["min_margin"],
+                    max_products=config["max_products"],
+                    max_price=config["max_price"],
+                )
                 if product:
                     products.append(product)
             except Exception:
@@ -233,8 +280,42 @@ async def _scrape_category(page, category: dict) -> list[dict]:
 
 # ── entry point ───────────────────────────────────────────────────────────────
 
-async def scrape_keywords(categories: list[dict]) -> list[dict]:
-    """Compatível com a assinatura usada em main.py."""
+async def scrape_keywords(categories: list[dict], marketplace: str = "amazon_us") -> list[dict]:
+    """
+    marketplace: 'amazon_us' | 'amazon_br'
+    Compatível com a assinatura usada em main.py.
+    """
+    is_br = marketplace == "amazon_br"
+
+    # Importa config correto dinamicamente
+    if is_br:
+        from amazon_movers_config_br import (
+            AMAZON_FEE_PCT as FEE,
+            MIN_REVIEWS as MR,
+            MIN_MARGIN_PCT as MM,
+            MAX_PRODUCTS_PER_CATEGORY as MP,
+            MAX_AMAZON_PRICE as MAX_P,
+        )
+    else:
+        from amazon_movers_config import (
+            AMAZON_FEE_PCT as FEE,
+            MIN_REVIEWS as MR,
+            MIN_MARGIN_PCT as MM,
+            MAX_PRODUCTS_PER_CATEGORY as MP,
+        )
+        MAX_P = 500.0
+
+    config = {
+        "fee_pct": FEE,
+        "min_reviews": MR,
+        "min_margin": MM,
+        "max_products": MP,
+        "max_price": MAX_P,
+    }
+
+    locale = "pt-BR" if is_br else "en-US"
+    accept_lang = "pt-BR,pt;q=0.9" if is_br else "en-US,en;q=0.9"
+
     all_products = []
 
     async with async_playwright() as p:
@@ -253,9 +334,9 @@ async def scrape_keywords(categories: list[dict]) -> list[dict]:
                 "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
             ),
             viewport={"width": 1280, "height": 800},
-            locale="en-US",
+            locale=locale,
             extra_http_headers={
-                "Accept-Language": "en-US,en;q=0.9",
+                "Accept-Language": accept_lang,
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             },
         )
@@ -263,7 +344,7 @@ async def scrape_keywords(categories: list[dict]) -> list[dict]:
         page = await context.new_page()
 
         for cat in categories:
-            products = await _scrape_category(page, cat)
+            products = await _scrape_category(page, cat, config, marketplace)
             all_products.extend(products)
             await asyncio.sleep(3)
 
@@ -273,7 +354,7 @@ async def scrape_keywords(categories: list[dict]) -> list[dict]:
 
 
 if __name__ == "__main__":
-    results = asyncio.run(scrape_keywords(CATEGORIES))
+    results = asyncio.run(scrape_keywords(CATEGORIES, marketplace="amazon_us"))
     print(f"\n{len(results)} produto(s) encontrados\n")
     for prod in sorted(results, key=lambda x: x["score"], reverse=True):
         name = prod["name"][:55].encode("ascii", errors="replace").decode("ascii")

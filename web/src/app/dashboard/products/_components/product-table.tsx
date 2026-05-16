@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TrendingUp, DollarSign, Star, AlertCircle, PackageSearch } from 'lucide-react'
 import { clsx } from 'clsx'
+
+type Marketplace = 'amazon_br' | 'amazon_us'
 
 type Product = {
   id: string
@@ -17,9 +19,8 @@ type Product = {
   category: string
   aliexpress_url: string
   search_keyword: string
+  marketplace?: string
 }
-
-const CATEGORIES = ['Todos', 'Casa e Cozinha', 'Pets', 'Fitness', 'Jardim', 'Ferramentas']
 
 function ScoreBadge({ score }: { score: number }) {
   return (
@@ -47,15 +48,47 @@ function MarginBadge({ pct }: { pct: number }) {
   )
 }
 
+const MARKETPLACE_LABELS: Record<Marketplace, string> = {
+  amazon_br: 'Amazon BR',
+  amazon_us: 'Amazon US',
+}
+
+const CURRENCY: Record<Marketplace, string> = {
+  amazon_br: 'R$',
+  amazon_us: '$',
+}
+
 const PAGE_SIZE = 25
 
 export function ProductTable({ products }: { products: Product[] }) {
+  const [marketplace, setMarketplace] = useState<Marketplace>('amazon_br')
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('Todos')
   const [minMargin, setMinMargin] = useState(25)
   const [page, setPage] = useState(1)
 
-  const filtered = products.filter(p => {
+  // Persiste preferência de marketplace
+  useEffect(() => {
+    const saved = localStorage.getItem('vantis_marketplace') as Marketplace | null
+    if (saved && (saved === 'amazon_br' || saved === 'amazon_us')) {
+      setMarketplace(saved)
+    }
+  }, [])
+
+  function selectMarketplace(m: Marketplace) {
+    setMarketplace(m)
+    setCategory('Todos')
+    setPage(1)
+    localStorage.setItem('vantis_marketplace', m)
+  }
+
+  const byMarketplace = products.filter(p =>
+    (p.marketplace ?? 'amazon_us') === marketplace
+  )
+
+  const categories = ['Todos', ...Array.from(new Set(byMarketplace.map(p => p.category))).sort()]
+
+  const filtered = byMarketplace.filter(p => {
     const matchQuery = p.name.toLowerCase().includes(query.toLowerCase())
     const matchCategory = category === 'Todos' || p.category === category
     const matchMargin = p.margin_pct >= minMargin
@@ -65,6 +98,7 @@ export function ProductTable({ products }: { products: Product[] }) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const currentPage = Math.min(page, totalPages)
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const currency = CURRENCY[marketplace]
 
   if (products.length === 0) {
     return (
@@ -72,7 +106,7 @@ export function ProductTable({ products }: { products: Product[] }) {
         <PackageSearch size={40} className="text-zinc-600 mb-4" />
         <p className="text-zinc-400 font-medium">Nenhum produto ainda</p>
         <p className="text-zinc-600 text-sm mt-1">
-          Clique em <span className="text-violet-400">Executar Scraper</span> para buscar produtos no AliExpress
+          Clique em <span className="text-violet-400">Executar Scraper</span> para buscar produtos
         </p>
       </div>
     )
@@ -80,6 +114,24 @@ export function ProductTable({ products }: { products: Product[] }) {
 
   return (
     <div className="space-y-4">
+      {/* Seletor de marketplace */}
+      <div className="flex gap-1 rounded-lg border border-zinc-800 bg-zinc-900/60 p-1 w-fit">
+        {(Object.keys(MARKETPLACE_LABELS) as Marketplace[]).map(m => (
+          <button
+            key={m}
+            onClick={() => selectMarketplace(m)}
+            className={clsx(
+              'px-4 py-1.5 rounded-md text-sm font-medium transition-colors',
+              marketplace === m
+                ? 'bg-violet-600 text-white shadow'
+                : 'text-zinc-400 hover:text-white'
+            )}
+          >
+            {MARKETPLACE_LABELS[m]}
+          </button>
+        ))}
+      </div>
+
       {/* Filtros */}
       <div className="flex flex-wrap gap-3 items-end">
         <div className="relative flex-1 min-w-[200px]">
@@ -96,7 +148,7 @@ export function ProductTable({ products }: { products: Product[] }) {
           onChange={e => { setCategory(e.target.value); setPage(1) }}
           className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-violet-500 focus:outline-none"
         >
-          {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+          {categories.map(c => <option key={c}>{c}</option>)}
         </select>
         <div className="flex items-center gap-2">
           <label className="text-xs text-zinc-400 whitespace-nowrap">Margem mín.</label>
@@ -114,7 +166,13 @@ export function ProductTable({ products }: { products: Product[] }) {
       {/* Aviso dados reais */}
       <div className="flex items-center gap-2 rounded-md border border-zinc-700/50 bg-zinc-900/50 px-4 py-2.5 text-sm text-zinc-400">
         <AlertCircle size={14} />
-        <span>Produtos do Amazon Movers &amp; Shakers — custo estimado via multiplicador por categoria. Atualizado diariamente às 8h.</span>
+        <span>
+          {marketplace === 'amazon_br'
+            ? 'Produtos do Amazon Movers & Shakers BR — preços em R$, custo estimado via multiplicador por categoria.'
+            : 'Produtos do Amazon Movers & Shakers US — custo estimado via multiplicador por categoria.'
+          }
+          {' '}Atualizado diariamente às 8h.
+        </span>
       </div>
 
       {/* Tabela */}
@@ -123,8 +181,8 @@ export function ProductTable({ products }: { products: Product[] }) {
           <thead className="bg-zinc-900 border-b border-zinc-800">
             <tr>
               <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">Produto</th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">AliExpress</th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">Amazon est.</th>
+              <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">Custo est.</th>
+              <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">Amazon</th>
               <th className="text-center px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">Margem</th>
               <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide">Pedidos/mês</th>
               <th className="text-center px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wide w-16">Score</th>
@@ -134,7 +192,10 @@ export function ProductTable({ products }: { products: Product[] }) {
             {paginated.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-12 text-zinc-500">
-                  Nenhum produto com esses filtros.
+                  {byMarketplace.length === 0
+                    ? `Nenhum produto para ${MARKETPLACE_LABELS[marketplace]} ainda. Execute o scraper para buscar.`
+                    : 'Nenhum produto com esses filtros.'
+                  }
                 </td>
               </tr>
             ) : (
@@ -161,10 +222,10 @@ export function ProductTable({ products }: { products: Product[] }) {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right text-zinc-300 font-mono">
-                    ${product.aliexpress_price?.toFixed(2)}
+                    {currency}{product.aliexpress_price?.toFixed(2)}
                   </td>
                   <td className="px-4 py-3 text-right text-zinc-300 font-mono">
-                    ${product.estimated_amazon_price?.toFixed(2)}
+                    {currency}{product.estimated_amazon_price?.toFixed(2)}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <MarginBadge pct={product.margin_pct} />
